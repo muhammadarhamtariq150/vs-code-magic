@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { Menu, Spade } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AuthDialog from "@/components/auth/AuthDialog";
 
 const Header = () => {
+  const [authOpen, setAuthOpen] = useState(false);
+
   return (
+    <>
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     <header className="h-16 bg-background/80 backdrop-blur-md border-b border-border/30 flex items-center justify-between px-4 sticky top-0 z-50">
       <div className="flex items-center gap-4">
         <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
@@ -25,14 +31,18 @@ const Header = () => {
       </div>
       
       <div className="flex items-center gap-3">
-        <button className="text-foreground/80 hover:text-foreground font-medium transition-colors">
+        <button 
+          onClick={() => setAuthOpen(true)}
+          className="text-foreground/80 hover:text-foreground font-medium transition-colors"
+        >
           Log in
         </button>
-        <Button className="btn-outline-light">
+        <Button className="btn-outline-light" onClick={() => setAuthOpen(true)}>
           REGISTER
         </Button>
       </div>
-    </header>
+      </header>
+    </>
   );
 };
 
