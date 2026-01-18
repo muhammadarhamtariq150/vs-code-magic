@@ -2,95 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 180 40% 6%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 180 35% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 180 35% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 168 80% 45%;
+    --primary-foreground: 180 40% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 180 30% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 180 25% 18%;
+    --muted-foreground: 180 10% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 90% 55%;
+    --accent-foreground: 180 40% 6%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 180 30% 20%;
+    --input: 180 30% 20%;
+    --ring: 168 80% 45%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom gaming colors */
+    --hot-badge: 340 85% 55%;
+    --gold: 45 90% 55%;
+    --gold-dark: 38 75% 45%;
+    --teal-glow: 168 80% 45%;
+    --sidebar-bg: 180 40% 8%;
+    --game-card-bg: 180 35% 12%;
+    
+    /* Gradients */
+    --gradient-dark: linear-gradient(180deg, hsl(180 40% 8%) 0%, hsl(180 50% 4%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(168 80% 45%) 0%, hsl(180 70% 35%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 90% 55%) 0%, hsl(38 75% 45%) 100%);
+    --gradient-hot: linear-gradient(135deg, hsl(340 85% 55%) 0%, hsl(350 80% 45%) 100%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsl(168 80% 45% / 0.3);
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.4);
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 180 40% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 168 80% 45%;
+    --sidebar-primary-foreground: 180 40% 6%;
+    --sidebar-accent: 180 30% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 180 30% 20%;
+    --sidebar-ring: 168 80% 45%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 180 40% 6%;
+    --foreground: 0 0% 98%;
   }
 }
 
@@ -100,6 +76,103 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-dark);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-full px-6 py-2 transition-all duration-300;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .btn-primary:hover {
+    @apply scale-105;
+    box-shadow: 0 0 40px hsl(168 80% 45% / 0.5);
+  }
+
+  .btn-outline-light {
+    @apply border border-foreground/80 text-foreground font-semibold rounded-lg px-6 py-2 transition-all duration-300;
+  }
+
+  .btn-outline-light:hover {
+    @apply bg-foreground text-background;
+  }
+
+  .sidebar-item {
+    @apply flex flex-col items-center justify-center gap-1 p-3 rounded-xl transition-all duration-300 cursor-pointer;
+  }
+
+  .sidebar-item:hover {
+    @apply bg-secondary;
+  }
+
+  .sidebar-item.active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .game-card {
+    @apply relative rounded-xl overflow-hidden transition-all duration-300 cursor-pointer;
+    background: hsl(var(--game-card-bg));
+  }
+
+  .game-card:hover {
+    @apply scale-105;
+    box-shadow: 0 8px 30px hsl(0 0% 0% / 0.5);
+  }
+
+  .hot-badge {
+    @apply absolute top-2 left-2 px-2 py-0.5 text-xs font-bold text-white rounded;
+    background: var(--gradient-hot);
+  }
+
+  .multiplier-badge {
+    @apply absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded;
+    background: var(--gradient-gold);
+    color: hsl(var(--background));
+  }
+
+  .category-tab {
+    @apply flex items-center gap-2 px-5 py-2 rounded-full font-medium transition-all duration-300 cursor-pointer;
+  }
+
+  .category-tab.active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .category-tab:not(.active) {
+    @apply text-primary hover:bg-secondary;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-md border border-border/30;
+    background: hsl(var(--card) / 0.8);
+  }
+
+  .search-input {
+    @apply bg-secondary/50 border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors;
+  }
+
+  .floating-action {
+    @apply w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shadow-lg;
+  }
+
+  .floating-action:hover {
+    @apply scale-110;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
   }
 }

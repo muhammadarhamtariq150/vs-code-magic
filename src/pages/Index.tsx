@@ -1,12 +1,43 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
+import CategoryTabs from "@/components/games/CategoryTabs";
+import SearchBar from "@/components/games/SearchBar";
+import GamesGrid from "@/components/games/GamesGrid";
+import FloatingActions from "@/components/games/FloatingActions";
 
 const Index = () => {
+  const [activeCategory, setActiveCategory] = useState("lobby");
+  const [activeTab, setActiveTab] = useState("hot");
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <div className="flex">
+        <Sidebar 
+          activeCategory={activeCategory} 
+          onCategoryChange={setActiveCategory} 
+        />
+        
+        <main className="flex-1 p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <CategoryTabs 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab} 
+            />
+            <SearchBar 
+              value={searchQuery} 
+              onChange={setSearchQuery} 
+            />
+          </div>
+          
+          <GamesGrid searchQuery={searchQuery} />
+        </main>
       </div>
+      
+      <FloatingActions />
     </div>
   );
 };
