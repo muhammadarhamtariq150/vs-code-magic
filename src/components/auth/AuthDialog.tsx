@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eye, EyeOff, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface AuthDialogProps {
   open: boolean;
@@ -14,11 +16,85 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const resetForm = () => {
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle auth logic here
-    console.log({ activeTab, username, password, confirmPassword });
+    
+    if (!username.trim() || !password.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (activeTab === "register" && password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (activeTab === "register") {
+        // Use username as email format for simplicity
+        const email = `${username.toLowerCase().replace(/\s+/g, '')}@gamewin.app`;
+        
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              username: username.trim(),
+            },
+          },
+        });
+
+        if (error) {
+          if (error.message.includes("already registered")) {
+            toast.error("This username is already taken");
+          } else {
+            toast.error(error.message);
+          }
+          return;
+        }
+
+        toast.success("Account created successfully!");
+        resetForm();
+        onOpenChange(false);
+      } else {
+        // Login
+        const email = `${username.toLowerCase().replace(/\s+/g, '')}@gamewin.app`;
+        
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          toast.error("Invalid username or password");
+          return;
+        }
+
+        toast.success("Welcome back!");
+        resetForm();
+        onOpenChange(false);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +139,8 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               placeholder="Please enter Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+              disabled={loading}
+              className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
             />
           </div>
 
@@ -74,7 +151,8 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               placeholder="Please enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+              disabled={loading}
+              className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
             />
             <button
               type="button"
@@ -93,7 +171,8 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 placeholder="Please enter Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+                disabled={loading}
+                className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
               />
               <button
                 type="button"
@@ -108,9 +187,10 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-lg mt-6 transition-all shadow-lg shadow-primary/20"
+            disabled={loading}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-lg mt-6 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
           >
-            {activeTab === "register" ? "REGISTER" : "LOG IN"}
+            {loading ? "Please wait..." : activeTab === "register" ? "REGISTER" : "LOG IN"}
           </button>
         </form>
 
