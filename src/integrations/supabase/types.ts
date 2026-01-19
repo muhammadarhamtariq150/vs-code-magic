@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          sender_account: string | null
+          status: Database["public"]["Enums"]["deposit_status"]
+          transaction_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method: Database["public"]["Enums"]["deposit_method"]
+          sender_account?: string | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          transaction_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: Database["public"]["Enums"]["deposit_method"]
+          sender_account?: string | null
+          status?: Database["public"]["Enums"]["deposit_status"]
+          transaction_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -49,7 +85,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      deposit_method: "usdt" | "easypaisa" | "jazzcash"
+      deposit_status: "pending" | "confirmed" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +213,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      deposit_method: ["usdt", "easypaisa", "jazzcash"],
+      deposit_status: ["pending", "confirmed", "rejected"],
+    },
   },
 } as const
