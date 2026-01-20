@@ -1,13 +1,22 @@
+import { useNavigate } from "react-router-dom";
+
 interface GameCardProps {
   name: string;
   image: string;
   url: string;
   isHot?: boolean;
+  isInternal?: boolean;
 }
 
-const GameCard = ({ name, image, url, isHot }: GameCardProps) => {
+const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
+  const navigate = useNavigate();
+  
   const handlePlay = () => {
-    window.open(url, '_blank');
+    if (isInternal) {
+      navigate(url);
+    } else {
+      window.open(url, '_blank');
+    }
   };
 
   return (
