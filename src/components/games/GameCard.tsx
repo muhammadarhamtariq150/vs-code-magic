@@ -1,14 +1,17 @@
 interface GameCardProps {
   name: string;
   image: string;
+  url: string;
   isHot?: boolean;
-  multiplier?: string;
-  winTime?: string;
 }
 
-const GameCard = ({ name, image, isHot, multiplier, winTime }: GameCardProps) => {
+const GameCard = ({ name, image, url, isHot }: GameCardProps) => {
+  const handlePlay = () => {
+    window.open(url, '_blank');
+  };
+
   return (
-    <div className="game-card group">
+    <div className="game-card group cursor-pointer" onClick={handlePlay}>
       <div className="relative aspect-[4/3] overflow-hidden">
         <img 
           src={image} 
@@ -18,16 +21,6 @@ const GameCard = ({ name, image, isHot, multiplier, winTime }: GameCardProps) =>
         
         {isHot && (
           <div className="hot-badge">HOT</div>
-        )}
-        
-        {multiplier && (
-          <div className="multiplier-badge">{multiplier}</div>
-        )}
-        
-        {winTime && (
-          <div className="absolute top-2 right-2 bg-blue-500 px-2 py-0.5 text-xs font-bold text-white rounded">
-            {winTime}
-          </div>
         )}
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
