@@ -1,7 +1,7 @@
 import GameCard from "./GameCard";
 
 const games = [
-  { id: 1, name: "Gems Mines", image: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?w=400&h=300&fit=crop", url: "https://bright-gem-craft.lovable.app", isHot: true },
+  { id: 1, name: "Gems Mines", image: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?w=400&h=300&fit=crop", url: "/games/gems-mines", isHot: true, isInternal: true },
   { id: 2, name: "SOS", image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop", url: "https://sosgame.lovable.app", isHot: true },
   { id: 3, name: "Lottery", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=300&fit=crop", url: "https://lottery123.lovable.app", isHot: true },
   { id: 4, name: "High or Low", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop", url: "https://highorlow.lovable.app", isHot: true },
@@ -34,6 +34,7 @@ const GamesGrid = ({ searchQuery }: GamesGridProps) => {
           image={game.image}
           url={game.url}
           isHot={game.isHot}
+          isInternal={'isInternal' in game && game.isInternal}
         />
       ))}
     </div>
