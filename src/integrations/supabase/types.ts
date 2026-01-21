@@ -167,7 +167,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      deposit_method: "usdt" | "easypaisa" | "jazzcash"
+      deposit_method:
+        | "usdt"
+        | "easypaisa"
+        | "jazzcash"
+        | "paytm"
+        | "googlepay"
+        | "phonepay"
+        | "binance"
       deposit_status: "pending" | "confirmed" | "rejected"
     }
     CompositeTypes: {
@@ -297,7 +304,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      deposit_method: ["usdt", "easypaisa", "jazzcash"],
+      deposit_method: [
+        "usdt",
+        "easypaisa",
+        "jazzcash",
+        "paytm",
+        "googlepay",
+        "phonepay",
+        "binance",
+      ],
       deposit_status: ["pending", "confirmed", "rejected"],
     },
   },
