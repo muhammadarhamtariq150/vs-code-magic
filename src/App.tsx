@@ -6,6 +6,18 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GemsMines from "./pages/games/GemsMines";
+import SOS from "./pages/games/SOS";
+import Lottery from "./pages/games/Lottery";
+import HighOrLow from "./pages/games/HighOrLow";
+import Blackjack21 from "./pages/games/Blackjack21";
+import Slots777 from "./pages/games/Slots777";
+import LoveSlots from "./pages/games/LoveSlots";
+import Crazy777 from "./pages/games/Crazy777";
+import Jackpot from "./pages/games/Jackpot";
+import F1Formula from "./pages/games/F1Formula";
+import Plinko from "./pages/games/Plinko";
+import Wingo from "./pages/games/Wingo";
+import Aviator from "./pages/games/Aviator";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +30,18 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/games/gems-mines" element={<GemsMines />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/games/sos" element={<SOS />} />
+          <Route path="/games/lottery" element={<Lottery />} />
+          <Route path="/games/high-or-low" element={<HighOrLow />} />
+          <Route path="/games/21" element={<Blackjack21 />} />
+          <Route path="/games/slots-777" element={<Slots777 />} />
+          <Route path="/games/love-slots" element={<LoveSlots />} />
+          <Route path="/games/crazy-777" element={<Crazy777 />} />
+          <Route path="/games/jackpot" element={<Jackpot />} />
+          <Route path="/games/f1-formula" element={<F1Formula />} />
+          <Route path="/games/plinko" element={<Plinko />} />
+          <Route path="/games/wingo" element={<Wingo />} />
+          <Route path="/games/aviator" element={<Aviator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
