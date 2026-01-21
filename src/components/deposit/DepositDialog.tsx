@@ -9,11 +9,25 @@ interface DepositDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export type DepositMethod = "usdt" | "easypaisa" | "jazzcash";
+export type DepositMethod = "usdt" | "easypaisa" | "jazzcash" | "paytm" | "googlepay" | "phonepay" | "binance";
 
-const depositMethods = [
+interface DepositMethodConfig {
+  id: DepositMethod;
+  name: string;
+  description: string;
+  icon: typeof Wallet;
+  color: string;
+  accountLabel: string;
+  accountPlaceholder: string;
+  showBankDetails?: boolean;
+  ownerName?: string;
+  bankAccount?: string;
+  ifscCode?: string;
+}
+
+const depositMethods: DepositMethodConfig[] = [
   {
-    id: "usdt" as DepositMethod,
+    id: "usdt",
     name: "Deposit USDT",
     description: "Cryptocurrency deposit",
     icon: Wallet,
@@ -22,7 +36,17 @@ const depositMethods = [
     accountPlaceholder: "Your TRC20 wallet address",
   },
   {
-    id: "easypaisa" as DepositMethod,
+    id: "binance",
+    name: "Binance Pay",
+    description: "Crypto payment via Binance",
+    icon: Wallet,
+    color: "from-yellow-500 to-orange-500",
+    accountLabel: "Binance Pay ID",
+    accountPlaceholder: "Your Binance Pay ID",
+    ownerName: "Gaming Platform",
+  },
+  {
+    id: "easypaisa",
     name: "Easypaisa",
     description: "Mobile wallet transfer",
     icon: Smartphone,
@@ -31,13 +55,52 @@ const depositMethods = [
     accountPlaceholder: "03XX-XXXXXXX",
   },
   {
-    id: "jazzcash" as DepositMethod,
+    id: "jazzcash",
     name: "JazzCash",
     description: "Mobile wallet transfer",
     icon: CreditCard,
     color: "from-red-500 to-red-600",
     accountLabel: "JazzCash Account Number",
     accountPlaceholder: "03XX-XXXXXXX",
+  },
+  {
+    id: "paytm",
+    name: "Paytm",
+    description: "UPI / Bank transfer",
+    icon: Smartphone,
+    color: "from-blue-500 to-blue-600",
+    accountLabel: "Paytm Number / UPI ID",
+    accountPlaceholder: "Your Paytm number or UPI ID",
+    showBankDetails: true,
+    ownerName: "Gaming Platform",
+    bankAccount: "1234567890123456",
+    ifscCode: "PAYT0001234",
+  },
+  {
+    id: "googlepay",
+    name: "Google Pay",
+    description: "UPI / Bank transfer",
+    icon: Smartphone,
+    color: "from-blue-400 to-green-500",
+    accountLabel: "Google Pay UPI ID",
+    accountPlaceholder: "yourname@okaxis",
+    showBankDetails: true,
+    ownerName: "Gaming Platform",
+    bankAccount: "1234567890123456",
+    ifscCode: "GPAY0001234",
+  },
+  {
+    id: "phonepay",
+    name: "PhonePe",
+    description: "UPI / Bank transfer",
+    icon: Smartphone,
+    color: "from-purple-500 to-purple-700",
+    accountLabel: "PhonePe UPI ID",
+    accountPlaceholder: "yourname@ybl",
+    showBankDetails: true,
+    ownerName: "Gaming Platform",
+    bankAccount: "1234567890123456",
+    ifscCode: "PPAY0001234",
   },
 ];
 

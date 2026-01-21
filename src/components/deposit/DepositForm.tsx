@@ -16,15 +16,23 @@ interface DepositFormProps {
     accountLabel: string;
     accountPlaceholder: string;
     color: string;
+    showBankDetails?: boolean;
+    ownerName?: string;
+    bankAccount?: string;
+    ifscCode?: string;
   };
   onSuccess: () => void;
 }
 
 // Demo receiving accounts - replace with real accounts
-const receivingAccounts = {
+const receivingAccounts: Record<DepositMethod, string> = {
   usdt: "TXkVrXNUHGDrGKKWJrXN9cYdNLEg5jL1cE",
-  easypaisa: "0312-1234567",
-  jazzcash: "0311-7654321",
+  easypaisa: "03229801400",
+  jazzcash: "03229801400",
+  paytm: "9876543210@paytm",
+  googlepay: "gamingplatform@okaxis",
+  phonepay: "gamingplatform@ybl",
+  binance: "gaming-platform-binance",
 };
 
 type Step = "amount" | "payment" | "confirm" | "success";
@@ -172,8 +180,16 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
   if (step === "payment") {
     return (
       <div className="flex flex-col gap-4 mt-4">
-        <div className="bg-secondary/30 rounded-lg p-4">
-          <p className="text-sm text-muted-foreground mb-2">Send {amount} to:</p>
+        <div className="bg-secondary/30 rounded-lg p-4 space-y-3">
+          <p className="text-sm text-muted-foreground">Send {amount} to:</p>
+          
+          {methodData.ownerName && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Owner Name:</span>
+              <span className="text-sm font-medium text-foreground">{methodData.ownerName}</span>
+            </div>
+          )}
+          
           <div className="flex items-center gap-2">
             <code className="flex-1 bg-background p-2 rounded text-sm font-mono break-all">
               {receivingAccounts[method]}
@@ -186,6 +202,43 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
               <Copy className="w-4 h-4" />
             </Button>
           </div>
+          
+          {methodData.showBankDetails && (
+            <>
+              {methodData.bankAccount && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Bank Account:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-mono text-foreground">{methodData.bankAccount}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => handleCopy(methodData.bankAccount!)}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {methodData.ifscCode && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">IFSC Code:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-mono text-foreground">{methodData.ifscCode}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => handleCopy(methodData.ifscCode!)}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="space-y-2">
