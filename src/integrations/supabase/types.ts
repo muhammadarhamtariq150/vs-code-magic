@@ -176,6 +176,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          account_name: string
+          account_number: string
+          additional_info: string | null
+          bank_name: string | null
+          created_at: string
+          id: string
+          ifsc_code: string | null
+          is_active: boolean
+          method: Database["public"]["Enums"]["deposit_method"]
+          network: string | null
+          qr_code_url: string | null
+          updated_at: string
+          wallet_address: string | null
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          additional_info?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          ifsc_code?: string | null
+          is_active?: boolean
+          method: Database["public"]["Enums"]["deposit_method"]
+          network?: string | null
+          qr_code_url?: string | null
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          additional_info?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          ifsc_code?: string | null
+          is_active?: boolean
+          method?: Database["public"]["Enums"]["deposit_method"]
+          network?: string | null
+          qr_code_url?: string | null
+          updated_at?: string
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           agent_id: string | null

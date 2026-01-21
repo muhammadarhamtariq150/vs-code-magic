@@ -1,12 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { CheckCircle, Copy, Loader2 } from "lucide-react";
+import { CheckCircle, Copy, Loader2, AlertCircle } from "lucide-react";
 import type { DepositMethod } from "./DepositDialog";
+
+interface PaymentSetting {
+  id: string;
+  method: DepositMethod;
+  account_name: string;
+  account_number: string;
+  bank_name: string | null;
+  ifsc_code: string | null;
+  wallet_address: string | null;
+  network: string | null;
+  additional_info: string | null;
+}
 
 interface DepositFormProps {
   method: DepositMethod;
@@ -24,27 +36,44 @@ interface DepositFormProps {
   onSuccess: () => void;
 }
 
-// Demo receiving accounts - replace with real accounts
-const receivingAccounts: Record<DepositMethod, string> = {
-  usdt: "TXkVrXNUHGDrGKKWJrXN9cYdNLEg5jL1cE",
-  easypaisa: "03229801400",
-  jazzcash: "03229801400",
-  paytm: "9876543210@paytm",
-  googlepay: "gamingplatform@okaxis",
-  phonepay: "gamingplatform@ybl",
-  binance: "gaming-platform-binance",
-};
-
-type Step = "amount" | "payment" | "confirm" | "success";
+type Step = "loading" | "amount" | "payment" | "confirm" | "success" | "unavailable";
 
 const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
-  const [step, setStep] = useState<Step>("amount");
+  const [step, setStep] = useState<Step>("loading");
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [senderAccount, setSenderAccount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentSetting, setPaymentSetting] = useState<PaymentSetting | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  useEffect(() => {
+    fetchPaymentSetting();
+  }, [method]);
+
+  const fetchPaymentSetting = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("payment_settings")
+        .select("*")
+        .eq("method", method)
+        .eq("is_active", true)
+        .single();
+
+      if (error || !data) {
+        setPaymentSetting(null);
+        setStep("unavailable");
+        return;
+      }
+
+      setPaymentSetting(data);
+      setStep("amount");
+    } catch {
+      setPaymentSetting(null);
+      setStep("unavailable");
+    }
+  };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -121,6 +150,31 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
     }
   };
 
+  if (step === "loading") {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (step === "unavailable") {
+    return (
+      <div className="flex flex-col items-center py-6 gap-4">
+        <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center">
+          <AlertCircle className="w-10 h-10 text-destructive" />
+        </div>
+        <h3 className="text-lg font-semibold text-foreground">Payment Method Unavailable</h3>
+        <p className="text-sm text-muted-foreground text-center">
+          {methodData.name} is currently not available. Please try another payment method.
+        </p>
+        <Button onClick={onSuccess} variant="outline" className="w-full mt-2">
+          Go Back
+        </Button>
+      </div>
+    );
+  }
+
   if (step === "success") {
     return (
       <div className="flex flex-col items-center py-6 gap-4">
@@ -177,67 +231,70 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
     );
   }
 
-  if (step === "payment") {
+  if (step === "payment" && paymentSetting) {
+    const isCrypto = ["usdt", "binance"].includes(method);
+    const displayAccount = isCrypto && paymentSetting.wallet_address
+      ? paymentSetting.wallet_address
+      : paymentSetting.account_number;
+
     return (
       <div className="flex flex-col gap-4 mt-4">
         <div className="bg-secondary/30 rounded-lg p-4 space-y-3">
           <p className="text-sm text-muted-foreground">Send {amount} to:</p>
           
-          {methodData.ownerName && (
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Owner Name:</span>
-              <span className="text-sm font-medium text-foreground">{methodData.ownerName}</span>
-            </div>
-          )}
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-muted-foreground">Account Name:</span>
+            <span className="text-sm font-medium text-foreground">{paymentSetting.account_name}</span>
+          </div>
           
           <div className="flex items-center gap-2">
             <code className="flex-1 bg-background p-2 rounded text-sm font-mono break-all">
-              {receivingAccounts[method]}
+              {displayAccount}
             </code>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleCopy(receivingAccounts[method])}
+              onClick={() => handleCopy(displayAccount)}
             >
               <Copy className="w-4 h-4" />
             </Button>
           </div>
           
-          {methodData.showBankDetails && (
-            <>
-              {methodData.bankAccount && (
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Bank Account:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-mono text-foreground">{methodData.bankAccount}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleCopy(methodData.bankAccount!)}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {methodData.ifscCode && (
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">IFSC Code:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-mono text-foreground">{methodData.ifscCode}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleCopy(methodData.ifscCode!)}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
+          {!isCrypto && paymentSetting.bank_name && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Bank Name:</span>
+              <span className="text-sm font-medium text-foreground">{paymentSetting.bank_name}</span>
+            </div>
+          )}
+
+          {!isCrypto && paymentSetting.ifsc_code && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">IFSC Code:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-mono text-foreground">{paymentSetting.ifsc_code}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => handleCopy(paymentSetting.ifsc_code!)}
+                >
+                  <Copy className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {isCrypto && paymentSetting.network && (
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Network:</span>
+              <span className="text-sm font-medium text-foreground">{paymentSetting.network}</span>
+            </div>
+          )}
+
+          {paymentSetting.additional_info && (
+            <div className="pt-2 border-t border-border/50">
+              <p className="text-xs text-muted-foreground">{paymentSetting.additional_info}</p>
+            </div>
           )}
         </div>
 
