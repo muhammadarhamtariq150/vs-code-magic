@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2 } from "lucide-react";
+import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -10,7 +10,7 @@ interface AuthDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type Step = "form" | "verify";
+type Step = "form" | "verify" | "forgot" | "reset-sent";
 
 const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
@@ -194,6 +194,39 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        {
+          redirectTo: `${window.location.origin}/`,
+        }
+      );
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      setStep("reset-sent");
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBack = () => {
     setStep("form");
     setOtpCode("");
@@ -275,6 +308,88 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               </button>
             </div>
           </div>
+        ) : step === "forgot" ? (
+          /* Forgot Password Step */
+          <div className="space-y-6">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
+                <KeyRound className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Reset Password</h2>
+              <p className="text-muted-foreground text-sm">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+            </div>
+
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Please enter Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+              />
+            </div>
+
+            <button
+              onClick={handleForgotPassword}
+              disabled={loading || !email.trim()}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-lg transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Reset Link"
+              )}
+            </button>
+          </div>
+        ) : step === "reset-sent" ? (
+          /* Reset Email Sent Step */
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 mx-auto rounded-full bg-green-500/20 flex items-center justify-center">
+                <Mail className="w-8 h-8 text-green-500" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Check your email</h2>
+              <p className="text-muted-foreground text-sm">
+                We've sent a password reset link to
+                <br />
+                <span className="text-foreground font-medium">{email}</span>
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setStep("form");
+                setActiveTab("login");
+              }}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 rounded-lg transition-all shadow-lg shadow-primary/20"
+            >
+              Back to Login
+            </button>
+
+            <div className="text-center">
+              <button
+                onClick={handleForgotPassword}
+                disabled={resendLoading}
+                className="text-primary hover:underline text-sm disabled:opacity-50"
+              >
+                Didn't receive email? Resend
+              </button>
+            </div>
+          </div>
         ) : (
           /* Login/Register Form */
           <>
@@ -346,6 +461,19 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                 </button>
               </div>
+
+              {/* Forgot Password - only for login */}
+              {activeTab === "login" && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setStep("forgot")}
+                    className="text-primary hover:underline text-sm"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
 
               {/* Confirm Password - only for register */}
               {activeTab === "register" && (
