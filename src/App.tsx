@@ -19,6 +19,17 @@ import Plinko from "./pages/games/Plinko";
 import Wingo from "./pages/games/Wingo";
 import Aviator from "./pages/games/Aviator";
 
+// Admin pages
+import Dashboard from "./pages/admin/Dashboard";
+import MemberDetails from "./pages/admin/MemberDetails";
+import MemberFinancialRecords from "./pages/admin/MemberFinancialRecords";
+import BettingRecords from "./pages/admin/BettingRecords";
+import MemberIP from "./pages/admin/MemberIP";
+import FastPaymentCheck from "./pages/admin/FastPaymentCheck";
+import Adjustment from "./pages/admin/Adjustment";
+import WagerAdjustment from "./pages/admin/WagerAdjustment";
+import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -42,6 +53,18 @@ const App = () => (
           <Route path="/games/plinko" element={<Plinko />} />
           <Route path="/games/wingo" element={<Wingo />} />
           <Route path="/games/aviator" element={<Aviator />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<Dashboard />} />
+          <Route path="/admin/members" element={<MemberDetails />} />
+          <Route path="/admin/members/financial" element={<MemberFinancialRecords />} />
+          <Route path="/admin/members/betting" element={<BettingRecords />} />
+          <Route path="/admin/members/ip" element={<MemberIP />} />
+          <Route path="/admin/finance/deposits" element={<FastPaymentCheck />} />
+          <Route path="/admin/finance/adjustment" element={<Adjustment />} />
+          <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
+          <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

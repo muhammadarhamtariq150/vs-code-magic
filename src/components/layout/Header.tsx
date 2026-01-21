@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { Menu, Spade, LogOut, User, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu, Spade, LogOut, User, Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AuthDialog from "@/components/auth/AuthDialog";
 import DepositDialog from "@/components/deposit/DepositDialog";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const Header = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
 
   const username = user?.user_metadata?.username || "Player";
 
@@ -22,12 +25,12 @@ const Header = () => {
             <Menu className="w-6 h-6" />
           </button>
           
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center">
               <span className="text-xl font-bold">🎰</span>
             </div>
             <span className="text-xl font-bold hidden sm:block">GameWin</span>
-          </div>
+          </Link>
         </div>
         
         <div className="flex items-center">
@@ -39,6 +42,14 @@ const Header = () => {
         
         {user ? (
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="outline" className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10">
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Button>
+              </Link>
+            )}
             <Button 
               className="bg-gradient-to-r from-primary to-teal-600 hover:from-primary/90 hover:to-teal-600/90 text-primary-foreground font-semibold flex items-center gap-2"
               onClick={() => setDepositOpen(true)}
