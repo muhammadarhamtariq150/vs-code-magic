@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      adjustments: {
+        Row: {
+          adjustment_type: Database["public"]["Enums"]["adjustment_type"]
+          amount: number
+          created_at: string
+          id: string
+          processed_by: string
+          reason: string | null
+          turnover_multiplier: number
+          turnover_required: number
+          user_id: string
+        }
+        Insert: {
+          adjustment_type: Database["public"]["Enums"]["adjustment_type"]
+          amount: number
+          created_at?: string
+          id?: string
+          processed_by: string
+          reason?: string | null
+          turnover_multiplier?: number
+          turnover_required?: number
+          user_id: string
+        }
+        Update: {
+          adjustment_type?: Database["public"]["Enums"]["adjustment_type"]
+          amount?: number
+          created_at?: string
+          id?: string
+          processed_by?: string
+          reason?: string | null
+          turnover_multiplier?: number
+          turnover_required?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bank_details: {
+        Row: {
+          account_holder: string
+          account_number: string
+          bank_name: string
+          created_at: string
+          id: string
+          ifsc_code: string | null
+          is_primary: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_holder: string
+          account_number: string
+          bank_name: string
+          created_at?: string
+          id?: string
+          ifsc_code?: string | null
+          is_primary?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_holder?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          id?: string
+          ifsc_code?: string | null
+          is_primary?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deposits: {
         Row: {
           amount: number
@@ -80,30 +152,105 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_logs: {
+        Row: {
+          device_info: string | null
+          id: string
+          ip_address: string
+          logged_in_at: string
+          user_id: string
+        }
+        Insert: {
+          device_info?: string | null
+          id?: string
+          ip_address: string
+          logged_in_at?: string
+          user_id: string
+        }
+        Update: {
+          device_info?: string | null
+          id?: string
+          ip_address?: string
+          logged_in_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          agent_id: string | null
           avatar_url: string | null
+          banned_at: string | null
+          banned_by: string | null
           created_at: string
           id: string
+          is_banned: boolean
+          phone: string | null
+          security_password_hash: string | null
           updated_at: string
           user_id: string
           username: string
+          withdrawal_forbidden: boolean
         }
         Insert: {
+          agent_id?: string | null
           avatar_url?: string | null
+          banned_at?: string | null
+          banned_by?: string | null
           created_at?: string
           id?: string
+          is_banned?: boolean
+          phone?: string | null
+          security_password_hash?: string | null
           updated_at?: string
           user_id: string
           username: string
+          withdrawal_forbidden?: boolean
         }
         Update: {
+          agent_id?: string | null
           avatar_url?: string | null
+          banned_at?: string | null
+          banned_by?: string | null
           created_at?: string
           id?: string
+          is_banned?: boolean
+          phone?: string | null
+          security_password_hash?: string | null
           updated_at?: string
           user_id?: string
           username?: string
+          withdrawal_forbidden?: boolean
+        }
+        Relationships: []
+      }
+      usdt_wallets: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          network: string
+          updated_at: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          network?: string
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          network?: string
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
         }
         Relationships: []
       }
@@ -127,6 +274,57 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      wager_tracking: {
+        Row: {
+          adjustment_id: string | null
+          created_at: string
+          deposit_id: string | null
+          id: string
+          is_fulfilled: boolean
+          turnover_completed: number
+          turnover_required: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adjustment_id?: string | null
+          created_at?: string
+          deposit_id?: string | null
+          id?: string
+          is_fulfilled?: boolean
+          turnover_completed?: number
+          turnover_required?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adjustment_id?: string | null
+          created_at?: string
+          deposit_id?: string | null
+          id?: string
+          is_fulfilled?: boolean
+          turnover_completed?: number
+          turnover_required?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wager_tracking_adjustment_id_fkey"
+            columns: ["adjustment_id"]
+            isOneToOne: false
+            referencedRelation: "adjustments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wager_tracking_deposit_id_fkey"
+            columns: ["deposit_id"]
+            isOneToOne: false
+            referencedRelation: "deposits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wallets: {
         Row: {
@@ -152,6 +350,48 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawals: {
+        Row: {
+          account_details: Json
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_details?: Json
+          amount: number
+          created_at?: string
+          id?: string
+          method: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_details?: Json
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -166,6 +406,13 @@ export type Database = {
       }
     }
     Enums: {
+      adjustment_type:
+        | "bonus_add"
+        | "bonus_reduce"
+        | "manual_add"
+        | "manual_reduce"
+        | "wager_add"
+        | "wager_reduce"
       app_role: "admin" | "user"
       deposit_method:
         | "usdt"
@@ -176,6 +423,12 @@ export type Database = {
         | "phonepay"
         | "binance"
       deposit_status: "pending" | "confirmed" | "rejected"
+      withdrawal_status:
+        | "pending"
+        | "review"
+        | "processing"
+        | "success"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -303,6 +556,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      adjustment_type: [
+        "bonus_add",
+        "bonus_reduce",
+        "manual_add",
+        "manual_reduce",
+        "wager_add",
+        "wager_reduce",
+      ],
       app_role: ["admin", "user"],
       deposit_method: [
         "usdt",
@@ -314,6 +575,13 @@ export const Constants = {
         "binance",
       ],
       deposit_status: ["pending", "confirmed", "rejected"],
+      withdrawal_status: [
+        "pending",
+        "review",
+        "processing",
+        "success",
+        "rejected",
+      ],
     },
   },
 } as const
