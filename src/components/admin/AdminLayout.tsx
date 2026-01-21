@@ -46,6 +46,7 @@ const menuItems = [
     title: "Finance",
     icon: DollarSign,
     children: [
+      { title: "Payment Settings", path: "/admin/finance/payment-settings", icon: Settings },
       { title: "Fast Payment Check", path: "/admin/finance/deposits", icon: CreditCard },
       { title: "Adjustment", path: "/admin/finance/adjustment", icon: Settings },
       { title: "Wager Adjustment", path: "/admin/finance/wager", icon: ArrowDownUp },

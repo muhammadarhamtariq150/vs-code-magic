@@ -29,6 +29,7 @@ import FastPaymentCheck from "./pages/admin/FastPaymentCheck";
 import Adjustment from "./pages/admin/Adjustment";
 import WagerAdjustment from "./pages/admin/WagerAdjustment";
 import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
+import PaymentSettings from "./pages/admin/PaymentSettings";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
           <Route path="/admin/members/financial" element={<MemberFinancialRecords />} />
           <Route path="/admin/members/betting" element={<BettingRecords />} />
           <Route path="/admin/members/ip" element={<MemberIP />} />
+          <Route path="/admin/finance/payment-settings" element={<PaymentSettings />} />
           <Route path="/admin/finance/deposits" element={<FastPaymentCheck />} />
           <Route path="/admin/finance/adjustment" element={<Adjustment />} />
           <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
