@@ -11,6 +11,9 @@ import loveSlotsImg from "@/assets/games/love-slots.jfif";
 import crazy777Img from "@/assets/games/crazy-777.jfif";
 import jackpotImg from "@/assets/games/jackpot.jfif";
 import f1FormulaImg from "@/assets/games/f1-formula.jfif";
+import plinkoImg from "@/assets/games/plinko.jfif";
+import wingoImg from "@/assets/games/wingo.jfif";
+import aviatorImg from "@/assets/games/aviator.jfif";
 
 const games = [
   { id: 1, name: "Gems Mines", image: gemsMinesImg, url: "/games/gems-mines", isHot: true, isInternal: true },
@@ -23,9 +26,9 @@ const games = [
   { id: 8, name: "Crazy 777", image: crazy777Img, url: "/games/crazy-777", isHot: true, isInternal: true },
   { id: 9, name: "Jackpot", image: jackpotImg, url: "/games/jackpot", isHot: true, isInternal: true },
   { id: 10, name: "F1 Formula", image: f1FormulaImg, url: "/games/f1-formula", isHot: true, isInternal: true },
-  { id: 11, name: "PLINKO", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop", url: "/games/plinko", isHot: true, isInternal: true },
-  { id: 12, name: "Wingo", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop", url: "/games/wingo", isHot: true, isInternal: true },
-  { id: 13, name: "Aviator", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=400&h=300&fit=crop", url: "/games/aviator", isHot: true, isInternal: true },
+  { id: 11, name: "PLINKO", image: plinkoImg, url: "/games/plinko", isHot: true, isInternal: true },
+  { id: 12, name: "Wingo", image: wingoImg, url: "/games/wingo", isHot: true, isInternal: true },
+  { id: 13, name: "Aviator", image: aviatorImg, url: "/games/aviator", isHot: true, isInternal: true },
 ];
 
 interface GamesGridProps {
