@@ -1,16 +1,28 @@
 import GameCard from "./GameCard";
 
+// Import game images
+import gemsMinesImg from "@/assets/games/gems-mines.webp";
+import sosImg from "@/assets/games/sos.png";
+import lotteryImg from "@/assets/games/lottery.jfif";
+import highOrLowImg from "@/assets/games/high-or-low.png";
+import blackjack21Img from "@/assets/games/blackjack-21.jfif";
+import slots777Img from "@/assets/games/slots-777.jfif";
+import loveSlotsImg from "@/assets/games/love-slots.jfif";
+import crazy777Img from "@/assets/games/crazy-777.jfif";
+import jackpotImg from "@/assets/games/jackpot.jfif";
+import f1FormulaImg from "@/assets/games/f1-formula.jfif";
+
 const games = [
-  { id: 1, name: "Gems Mines", image: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?w=400&h=300&fit=crop", url: "/games/gems-mines", isHot: true, isInternal: true },
-  { id: 2, name: "SOS", image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop", url: "/games/sos", isHot: true, isInternal: true },
-  { id: 3, name: "Lottery", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=300&fit=crop", url: "/games/lottery", isHot: true, isInternal: true },
-  { id: 4, name: "High or Low", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop", url: "/games/high-or-low", isHot: true, isInternal: true },
-  { id: 5, name: "21", image: "https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=400&h=300&fit=crop", url: "/games/21", isHot: true, isInternal: true },
-  { id: 6, name: "Slots 777", image: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=400&h=300&fit=crop", url: "/games/slots-777", isHot: true, isInternal: true },
-  { id: 7, name: "Love Slots", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=300&fit=crop", url: "/games/love-slots", isHot: true, isInternal: true },
-  { id: 8, name: "Crazy 777", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop", url: "/games/crazy-777", isHot: true, isInternal: true },
-  { id: 9, name: "Jackpot", image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop", url: "/games/jackpot", isHot: true, isInternal: true },
-  { id: 10, name: "F1 Formula", image: "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=400&h=300&fit=crop", url: "/games/f1-formula", isHot: true, isInternal: true },
+  { id: 1, name: "Gems Mines", image: gemsMinesImg, url: "/games/gems-mines", isHot: true, isInternal: true },
+  { id: 2, name: "SOS", image: sosImg, url: "/games/sos", isHot: true, isInternal: true },
+  { id: 3, name: "Lottery", image: lotteryImg, url: "/games/lottery", isHot: true, isInternal: true },
+  { id: 4, name: "High or Low", image: highOrLowImg, url: "/games/high-or-low", isHot: true, isInternal: true },
+  { id: 5, name: "21", image: blackjack21Img, url: "/games/21", isHot: true, isInternal: true },
+  { id: 6, name: "Slots 777", image: slots777Img, url: "/games/slots-777", isHot: true, isInternal: true },
+  { id: 7, name: "Love Slots", image: loveSlotsImg, url: "/games/love-slots", isHot: true, isInternal: true },
+  { id: 8, name: "Crazy 777", image: crazy777Img, url: "/games/crazy-777", isHot: true, isInternal: true },
+  { id: 9, name: "Jackpot", image: jackpotImg, url: "/games/jackpot", isHot: true, isInternal: true },
+  { id: 10, name: "F1 Formula", image: f1FormulaImg, url: "/games/f1-formula", isHot: true, isInternal: true },
   { id: 11, name: "PLINKO", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop", url: "/games/plinko", isHot: true, isInternal: true },
   { id: 12, name: "Wingo", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop", url: "/games/wingo", isHot: true, isInternal: true },
   { id: 13, name: "Aviator", image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=400&h=300&fit=crop", url: "/games/aviator", isHot: true, isInternal: true },
