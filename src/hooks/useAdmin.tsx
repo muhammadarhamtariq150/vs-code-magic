@@ -3,18 +3,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
 export const useAdmin = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(false);
 
   useEffect(() => {
     const checkAdminRole = async () => {
+      // Wait until auth has resolved; otherwise we may incorrectly redirect.
+      if (authLoading) return;
+
       if (!user) {
         setIsAdmin(false);
-        setLoading(false);
+        setRoleLoading(false);
         return;
       }
 
+      setRoleLoading(true);
       try {
         const { data, error } = await supabase
           .from("user_roles")
@@ -29,12 +33,12 @@ export const useAdmin = () => {
         console.error("Error checking admin role:", error);
         setIsAdmin(false);
       } finally {
-        setLoading(false);
+        setRoleLoading(false);
       }
     };
 
     checkAdminRole();
-  }, [user]);
+  }, [user, authLoading]);
 
-  return { isAdmin, loading };
+  return { isAdmin, loading: authLoading || roleLoading };
 };
