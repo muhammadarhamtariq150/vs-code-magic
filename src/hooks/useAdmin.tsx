@@ -5,7 +5,9 @@ import { useAuth } from "./useAuth";
 export const useAdmin = () => {
   const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [roleLoading, setRoleLoading] = useState(false);
+  // IMPORTANT: start in a "loading" state so AdminLayout doesn't redirect
+  // before the first role check has a chance to run.
+  const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
     const checkAdminRole = async () => {
