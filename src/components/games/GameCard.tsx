@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useSound } from "@/hooks/useSound";
 
 interface GameCardProps {
   name: string;
@@ -10,8 +11,10 @@ interface GameCardProps {
 
 const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
   const navigate = useNavigate();
+  const { playGame, playHover } = useSound();
   
   const handlePlay = () => {
+    playGame();
     if (isInternal) {
       navigate(url);
     } else {
@@ -19,8 +22,16 @@ const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
     }
   };
 
+  const handleMouseEnter = () => {
+    playHover();
+  };
+
   return (
-    <div className="game-card group cursor-pointer" onClick={handlePlay}>
+    <div 
+      className="game-card group cursor-pointer" 
+      onClick={handlePlay}
+      onMouseEnter={handleMouseEnter}
+    >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img 
           src={image} 

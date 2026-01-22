@@ -6,14 +6,31 @@ import AuthDialog from "@/components/auth/AuthDialog";
 import DepositDialog from "@/components/deposit/DepositDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useSound } from "@/hooks/useSound";
 
 const Header = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
+  const { playClick, playDeposit } = useSound();
 
   const username = user?.user_metadata?.username || "Player";
+
+  const handleAuthOpen = () => {
+    playClick();
+    setAuthOpen(true);
+  };
+
+  const handleDepositOpen = () => {
+    playDeposit();
+    setDepositOpen(true);
+  };
+
+  const handleSignOut = () => {
+    playClick();
+    signOut();
+  };
 
   return (
     <>
@@ -21,11 +38,14 @@ const Header = () => {
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
       <header className="h-16 bg-background/80 backdrop-blur-md border-b border-border/30 flex items-center justify-between px-4 sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
+          <button 
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            onClick={() => playClick()}
+          >
             <Menu className="w-6 h-6" />
           </button>
           
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2" onClick={() => playClick()}>
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center">
               <span className="text-xl font-bold">🎰</span>
             </div>
@@ -34,7 +54,7 @@ const Header = () => {
         </div>
         
         <div className="flex items-center">
-          <Button className="btn-primary flex items-center gap-2">
+          <Button className="btn-primary flex items-center gap-2" onClick={() => playClick()}>
             <Spade className="w-4 h-4" />
             <span>Gaming</span>
           </Button>
@@ -43,7 +63,7 @@ const Header = () => {
         {user ? (
           <div className="flex items-center gap-3">
             {isAdmin && (
-              <Link to="/admin">
+              <Link to="/admin" onClick={() => playClick()}>
                 <Button variant="outline" className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10">
                   <Shield className="w-4 h-4" />
                   <span className="hidden sm:inline">Admin</span>
@@ -52,7 +72,7 @@ const Header = () => {
             )}
             <Button 
               className="bg-gradient-to-r from-primary to-teal-600 hover:from-primary/90 hover:to-teal-600/90 text-primary-foreground font-semibold flex items-center gap-2"
-              onClick={() => setDepositOpen(true)}
+              onClick={handleDepositOpen}
             >
               <Plus className="w-4 h-4" />
               <span>DEPOSIT</span>
@@ -63,7 +83,7 @@ const Header = () => {
             </div>
             <Button 
               className="btn-outline-light flex items-center gap-2" 
-              onClick={signOut}
+              onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Logout</span>
@@ -72,12 +92,12 @@ const Header = () => {
         ) : (
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setAuthOpen(true)}
+              onClick={handleAuthOpen}
               className="text-foreground/80 hover:text-foreground font-medium transition-colors"
             >
               Log in
             </button>
-            <Button className="btn-outline-light" onClick={() => setAuthOpen(true)}>
+            <Button className="btn-outline-light" onClick={handleAuthOpen}>
               REGISTER
             </Button>
           </div>
