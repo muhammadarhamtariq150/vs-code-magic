@@ -26,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending verification email to ${email} with code ${otp_code}`);
 
-    const emailResponse = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "VS-Code-Magic <onboarding@resend.dev>",
       to: [email],
       subject: "Your Verification Code - VS Code Magic",
@@ -112,9 +112,20 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    if (error) {
+      console.error("Resend error:", error);
+      return new Response(
+        JSON.stringify({ success: false, error: error.message }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
+    console.log("Email sent successfully:", data);
+
+    return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
