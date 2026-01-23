@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,11 @@ interface AuthDialogProps {
 
 type Step = "form" | "verify" | "forgot" | "reset-sent";
 
+// Generate a 6-digit OTP code
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
   const [step, setStep] = useState<Step>("form");
@@ -24,6 +29,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  
+  // Store the generated OTP for verification
+  const generatedOTPRef = useRef<string>("");
 
   const resetForm = () => {
     setUsername("");
@@ -32,6 +40,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     setConfirmPassword("");
     setOtpCode("");
     setStep("form");
+    generatedOTPRef.current = "";
   };
 
   const validateEmail = (email: string) => {
@@ -72,8 +81,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
           toast.error("Invalid email or password");
         } else if (error.message.includes("Email not confirmed")) {
           toast.error("Please verify your email first");
+          // Send new OTP for verification
+          await sendCustomOTP();
           setStep("verify");
-          await resendOTP();
         } else {
           toast.error(error.message);
         }
@@ -87,6 +97,35 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Send custom OTP via our edge function
+  const sendCustomOTP = async () => {
+    const otp = generateOTP();
+    generatedOTPRef.current = otp;
+
+    console.log("Sending OTP:", otp, "to:", email.trim().toLowerCase());
+
+    try {
+      const { data, error } = await supabase.functions.invoke('send-verification-email', {
+        body: {
+          email: email.trim().toLowerCase(),
+          username: username.trim() || email.split('@')[0],
+          otp_code: otp,
+        },
+      });
+
+      if (error) {
+        console.error("Error sending OTP email:", error);
+        throw new Error(error.message || "Failed to send verification email");
+      }
+
+      console.log("OTP email sent successfully:", data);
+      return true;
+    } catch (error: any) {
+      console.error("Failed to send OTP:", error);
+      throw error;
     }
   };
 
@@ -113,30 +152,14 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            username: username.trim(),
-          },
-        },
-      });
-
-      if (error) {
-        if (error.message.includes("already registered")) {
-          toast.error("This email is already registered");
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
+      // First, send the custom OTP email
+      await sendCustomOTP();
+      
       toast.success("Verification code sent to your email!");
       setStep("verify");
-    } catch (error) {
-      toast.error("An unexpected error occurred");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      toast.error(error.message || "Failed to send verification code");
     } finally {
       setLoading(false);
     }
@@ -147,19 +170,10 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     setResendLoading(true);
     try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: email.trim().toLowerCase(),
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.success("Verification code resent!");
-    } catch (error) {
-      toast.error("Failed to resend code");
+      await sendCustomOTP();
+      toast.success("Verification code resent! Check your email.");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to resend code");
     } finally {
       setResendLoading(false);
     }
@@ -173,21 +187,52 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      // Verify the OTP code matches what we generated
+      if (otpCode !== generatedOTPRef.current) {
+        toast.error("Invalid verification code");
+        setLoading(false);
+        return;
+      }
+
+      // OTP verified, now create the actual Supabase account
+      const { error: signUpError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
-        token: otpCode,
-        type: "signup",
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            username: username.trim(),
+            email_verified: true,
+          },
+        },
       });
 
-      if (error) {
-        toast.error("Invalid or expired code");
-        return;
+      if (signUpError) {
+        if (signUpError.message.includes("already registered")) {
+          // User exists, try to sign them in
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password,
+          });
+
+          if (signInError) {
+            toast.error("This email is already registered. Please login instead.");
+            setActiveTab("login");
+            setStep("form");
+            setOtpCode("");
+            return;
+          }
+        } else {
+          toast.error(signUpError.message);
+          return;
+        }
       }
 
       toast.success("Email verified! Account created successfully!");
       resetForm();
       onOpenChange(false);
     } catch (error) {
+      console.error("Verification error:", error);
       toast.error("Verification failed");
     } finally {
       setLoading(false);
@@ -230,6 +275,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const handleBack = () => {
     setStep("form");
     setOtpCode("");
+    generatedOTPRef.current = "";
   };
 
   return (
