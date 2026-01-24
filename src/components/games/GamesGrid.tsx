@@ -14,6 +14,12 @@ import f1FormulaImg from "@/assets/games/f1-formula.jfif";
 import plinkoImg from "@/assets/games/plinko.jfif";
 import wingoImg from "@/assets/games/wingo.jfif";
 import aviatorImg from "@/assets/games/aviator.jfif";
+import rouletteImg from "@/assets/games/roulette.jpg";
+import diceImg from "@/assets/games/dice.jpg";
+import dragonTigerImg from "@/assets/games/dragon-tiger.jpg";
+import wheelFortuneImg from "@/assets/games/wheel-fortune.jpg";
+import kenoImg from "@/assets/games/keno.jpg";
+import crashImg from "@/assets/games/crash.jpg";
 
 const games = [
   { id: 1, name: "Gems Mines", image: gemsMinesImg, url: "/games/gems-mines", isHot: true, isInternal: true },
@@ -29,6 +35,12 @@ const games = [
   { id: 11, name: "PLINKO", image: plinkoImg, url: "/games/plinko", isHot: true, isInternal: true },
   { id: 12, name: "Wingo", image: wingoImg, url: "/games/wingo", isHot: true, isInternal: true },
   { id: 13, name: "Aviator", image: aviatorImg, url: "/games/aviator", isHot: true, isInternal: true },
+  { id: 14, name: "Roulette", image: rouletteImg, url: "/games/roulette", isHot: true, isInternal: true },
+  { id: 15, name: "Dice", image: diceImg, url: "/games/dice", isHot: true, isInternal: true },
+  { id: 16, name: "Dragon Tiger", image: dragonTigerImg, url: "/games/dragon-tiger", isHot: true, isInternal: true },
+  { id: 17, name: "Wheel of Fortune", image: wheelFortuneImg, url: "/games/wheel-fortune", isHot: true, isInternal: true },
+  { id: 18, name: "Keno", image: kenoImg, url: "/games/keno", isHot: true, isInternal: true },
+  { id: 19, name: "Crash", image: crashImg, url: "/games/crash", isHot: true, isInternal: true },
 ];
 
 interface GamesGridProps {
