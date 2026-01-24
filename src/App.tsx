@@ -18,6 +18,12 @@ import F1Formula from "./pages/games/F1Formula";
 import Plinko from "./pages/games/Plinko";
 import Wingo from "./pages/games/Wingo";
 import Aviator from "./pages/games/Aviator";
+import Roulette from "./pages/games/Roulette";
+import Dice from "./pages/games/Dice";
+import DragonTiger from "./pages/games/DragonTiger";
+import WheelFortune from "./pages/games/WheelFortune";
+import Keno from "./pages/games/Keno";
+import Crash from "./pages/games/Crash";
 
 // Admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -54,6 +60,12 @@ const App = () => (
           <Route path="/games/plinko" element={<Plinko />} />
           <Route path="/games/wingo" element={<Wingo />} />
           <Route path="/games/aviator" element={<Aviator />} />
+          <Route path="/games/roulette" element={<Roulette />} />
+          <Route path="/games/dice" element={<Dice />} />
+          <Route path="/games/dragon-tiger" element={<DragonTiger />} />
+          <Route path="/games/wheel-fortune" element={<WheelFortune />} />
+          <Route path="/games/keno" element={<Keno />} />
+          <Route path="/games/crash" element={<Crash />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<Dashboard />} />
