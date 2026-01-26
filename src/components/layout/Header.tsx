@@ -57,7 +57,7 @@ const Header = () => {
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center">
               <span className="text-xl font-bold">🎰</span>
             </div>
-            <span className="text-xl font-bold hidden sm:block">7BET</span>
+            <span className="text-xl font-bold hidden sm:block">7xBet</span>
           </Link>
         </div>
         
