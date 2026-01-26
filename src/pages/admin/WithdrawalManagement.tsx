@@ -122,6 +122,7 @@ const WithdrawalManagement = () => {
                   <TableHead>User</TableHead>
                   <TableHead>Method</TableHead>
                   <TableHead>Amount</TableHead>
+                  <TableHead>Account Details</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -133,6 +134,16 @@ const WithdrawalManagement = () => {
                     <TableCell className="font-medium">{w.username}</TableCell>
                     <TableCell className="capitalize">{w.method}</TableCell>
                     <TableCell className="font-medium">₹{w.amount.toLocaleString()}</TableCell>
+                    <TableCell className="max-w-[200px]">
+                      <div className="text-xs space-y-1">
+                        {Object.entries(w.account_details || {}).map(([key, value]) => (
+                          <div key={key} className="flex gap-1">
+                            <span className="text-muted-foreground capitalize">{key.replace(/_/g, ' ')}:</span>
+                            <span className="font-medium truncate">{String(value)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </TableCell>
                     <TableCell>{getStatusBadge(w.status)}</TableCell>
                     <TableCell>
                       {(w.status === "pending" || w.status === "review") && (
