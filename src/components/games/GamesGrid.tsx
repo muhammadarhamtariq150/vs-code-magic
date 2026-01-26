@@ -20,6 +20,7 @@ import dragonTigerImg from "@/assets/games/dragon-tiger.jpg";
 import wheelFortuneImg from "@/assets/games/wheel-fortune.jpg";
 import kenoImg from "@/assets/games/keno.jpg";
 import crashImg from "@/assets/games/crash.jpg";
+import chickenRoadImg from "@/assets/games/chicken-road.jpg";
 
 const games = [
   { id: 1, name: "Gems Mines", image: gemsMinesImg, url: "/games/gems-mines", isHot: true, isInternal: true },
@@ -41,6 +42,7 @@ const games = [
   { id: 17, name: "Wheel of Fortune", image: wheelFortuneImg, url: "/games/wheel-fortune", isHot: true, isInternal: true },
   { id: 18, name: "Keno", image: kenoImg, url: "/games/keno", isHot: true, isInternal: true },
   { id: 19, name: "Crash", image: crashImg, url: "/games/crash", isHot: true, isInternal: true },
+  { id: 20, name: "Chicken Road", image: chickenRoadImg, url: "/games/chicken-road", isHot: true, isInternal: true },
 ];
 
 interface GamesGridProps {

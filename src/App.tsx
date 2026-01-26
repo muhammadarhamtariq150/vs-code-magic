@@ -24,6 +24,7 @@ import DragonTiger from "./pages/games/DragonTiger";
 import WheelFortune from "./pages/games/WheelFortune";
 import Keno from "./pages/games/Keno";
 import Crash from "./pages/games/Crash";
+import ChickenRoad from "./pages/games/ChickenRoad";
 
 // Admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -66,6 +67,7 @@ const App = () => (
           <Route path="/games/wheel-fortune" element={<WheelFortune />} />
           <Route path="/games/keno" element={<Keno />} />
           <Route path="/games/crash" element={<Crash />} />
+          <Route path="/games/chicken-road" element={<ChickenRoad />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<Dashboard />} />
