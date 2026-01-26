@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Spade, LogOut, User, Plus, Shield } from "lucide-react";
+import { Menu, Spade, LogOut, User, Plus, Shield, ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AuthDialog from "@/components/auth/AuthDialog";
 import DepositDialog from "@/components/deposit/DepositDialog";
+import WithdrawalDialog from "@/components/withdrawal/WithdrawalDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useSound } from "@/hooks/useSound";
@@ -11,6 +12,7 @@ import { useSound } from "@/hooks/useSound";
 const Header = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
+  const [withdrawalOpen, setWithdrawalOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { playClick, playDeposit } = useSound();
@@ -27,6 +29,11 @@ const Header = () => {
     setDepositOpen(true);
   };
 
+  const handleWithdrawalOpen = () => {
+    playClick();
+    setWithdrawalOpen(true);
+  };
+
   const handleSignOut = () => {
     playClick();
     signOut();
@@ -36,6 +43,7 @@ const Header = () => {
     <>
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
+      <WithdrawalDialog open={withdrawalOpen} onOpenChange={setWithdrawalOpen} />
       <header className="h-16 bg-background/80 backdrop-blur-md border-b border-border/30 flex items-center justify-between px-4 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
@@ -75,7 +83,15 @@ const Header = () => {
               onClick={handleDepositOpen}
             >
               <Plus className="w-4 h-4" />
-              <span>DEPOSIT</span>
+              <span className="hidden sm:inline">DEPOSIT</span>
+            </Button>
+            <Button 
+              variant="outline"
+              className="border-primary/50 text-primary hover:bg-primary/10 font-semibold flex items-center gap-2"
+              onClick={handleWithdrawalOpen}
+            >
+              <ArrowDownToLine className="w-4 h-4" />
+              <span className="hidden sm:inline">WITHDRAW</span>
             </Button>
             <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg">
               <User className="w-4 h-4 text-primary" />
