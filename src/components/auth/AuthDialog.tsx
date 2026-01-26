@@ -152,14 +152,34 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     setLoading(true);
     try {
-      // First, send the custom OTP email
-      await sendCustomOTP();
-      
-      toast.success("Verification code sent to your email!");
-      setStep("verify");
+      // Direct registration without email verification
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            username: username.trim(),
+          },
+        },
+      });
+
+      if (signUpError) {
+        if (signUpError.message.includes("already registered")) {
+          toast.error("This email is already registered. Please login instead.");
+          setActiveTab("login");
+          return;
+        }
+        toast.error(signUpError.message);
+        return;
+      }
+
+      toast.success("Account created successfully! Welcome!");
+      resetForm();
+      onOpenChange(false);
     } catch (error: any) {
       console.error("Registration error:", error);
-      toast.error(error.message || "Failed to send verification code");
+      toast.error(error.message || "Registration failed");
     } finally {
       setLoading(false);
     }
