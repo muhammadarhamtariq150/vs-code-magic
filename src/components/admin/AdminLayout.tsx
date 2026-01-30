@@ -18,6 +18,7 @@ import {
   ArrowDownUp,
   Wallet,
   LogOut,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -51,6 +52,13 @@ const menuItems = [
       { title: "Adjustment", path: "/admin/finance/adjustment", icon: Settings },
       { title: "Wager Adjustment", path: "/admin/finance/wager", icon: ArrowDownUp },
       { title: "Withdrawal", path: "/admin/finance/withdrawal", icon: Wallet },
+    ],
+  },
+  {
+    title: "Game Control",
+    icon: Gamepad2,
+    children: [
+      { title: "Wingo Control", path: "/admin/games/wingo", icon: Target },
     ],
   },
 ];

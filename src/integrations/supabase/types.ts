@@ -398,6 +398,128 @@ export type Database = {
         }
         Relationships: []
       }
+      wingo_admin_controls: {
+        Row: {
+          created_at: string
+          duration_type: string
+          id: string
+          is_active: boolean | null
+          next_number: number | null
+          set_by: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_type: string
+          id?: string
+          is_active?: boolean | null
+          next_number?: number | null
+          set_by: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_type?: string
+          id?: string
+          is_active?: boolean | null
+          next_number?: number | null
+          set_by?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wingo_bets: {
+        Row: {
+          amount: number
+          bet_type: string
+          bet_value: string
+          created_at: string
+          id: string
+          is_winner: boolean | null
+          payout: number | null
+          potential_win: number
+          round_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bet_type: string
+          bet_value: string
+          created_at?: string
+          id?: string
+          is_winner?: boolean | null
+          payout?: number | null
+          potential_win: number
+          round_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bet_type?: string
+          bet_value?: string
+          created_at?: string
+          id?: string
+          is_winner?: boolean | null
+          payout?: number | null
+          potential_win?: number
+          round_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wingo_bets_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "wingo_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wingo_rounds: {
+        Row: {
+          admin_set_number: number | null
+          created_at: string
+          duration_type: string
+          end_time: string
+          id: string
+          is_admin_controlled: boolean | null
+          period_id: string
+          start_time: string
+          status: string
+          winning_color: string | null
+          winning_number: number | null
+          winning_size: string | null
+        }
+        Insert: {
+          admin_set_number?: number | null
+          created_at?: string
+          duration_type: string
+          end_time: string
+          id?: string
+          is_admin_controlled?: boolean | null
+          period_id: string
+          start_time?: string
+          status?: string
+          winning_color?: string | null
+          winning_number?: number | null
+          winning_size?: string | null
+        }
+        Update: {
+          admin_set_number?: number | null
+          created_at?: string
+          duration_type?: string
+          end_time?: string
+          id?: string
+          is_admin_controlled?: boolean | null
+          period_id?: string
+          start_time?: string
+          status?: string
+          winning_color?: string | null
+          winning_number?: number | null
+          winning_size?: string | null
+        }
+        Relationships: []
+      }
       withdrawals: {
         Row: {
           account_details: Json
