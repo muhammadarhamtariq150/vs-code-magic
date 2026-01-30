@@ -37,6 +37,7 @@ import Adjustment from "./pages/admin/Adjustment";
 import WagerAdjustment from "./pages/admin/WagerAdjustment";
 import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
 import PaymentSettings from "./pages/admin/PaymentSettings";
+import WingoControl from "./pages/admin/WingoControl";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/admin/finance/adjustment" element={<Adjustment />} />
           <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
+          <Route path="/admin/games/wingo" element={<WingoControl />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
