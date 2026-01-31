@@ -51,62 +51,59 @@ const Header = () => {
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
       <WithdrawalDialog open={withdrawalOpen} onOpenChange={setWithdrawalOpen} />
-      <header className="h-16 bg-background/80 backdrop-blur-md border-b border-border/30 flex items-center justify-between px-4 sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <button 
-            className="p-2 hover:bg-secondary rounded-lg transition-colors"
-            onClick={() => playClick()}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          
-          <Link to="/" className="flex items-center gap-2" onClick={() => playClick()}>
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center">
-              <span className="text-xl font-bold">🎰</span>
-            </div>
-            <span className="text-xl font-bold hidden sm:block">7xBet</span>
-          </Link>
-        </div>
-        
-        <div className="flex items-center">
-          <Button className="btn-primary flex items-center gap-2" onClick={() => playClick()}>
-            <Spade className="w-4 h-4" />
-            <span>Gaming</span>
-          </Button>
-        </div>
+      <header className="h-14 sm:h-16 bg-background/95 backdrop-blur-md border-b border-border/30 flex items-center justify-between px-3 sm:px-4 sticky top-0 z-50">
+        {/* Logo Section */}
+        <Link to="/" className="flex items-center gap-2" onClick={() => playClick()}>
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center shadow-lg">
+            <span className="text-lg sm:text-xl">🎰</span>
+          </div>
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">7xBet</span>
+        </Link>
         
         {user ? (
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             {isAdmin && (
               <Link to="/admin" onClick={() => playClick()}>
-                <Button variant="outline" className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="h-8 sm:h-9 px-2 sm:px-3 border-primary/50 text-primary hover:bg-primary/10"
+                >
                   <Shield className="w-4 h-4" />
-                  <span className="hidden sm:inline">Admin</span>
+                  <span className="hidden sm:inline ml-1.5">Admin</span>
                 </Button>
               </Link>
             )}
             <Button 
-              className="bg-gradient-to-r from-primary to-teal-600 hover:from-primary/90 hover:to-teal-600/90 text-primary-foreground font-semibold flex items-center gap-2"
+              size="sm"
+              className="h-8 sm:h-9 px-2.5 sm:px-4 bg-gradient-to-r from-primary to-teal-600 hover:from-primary/90 hover:to-teal-600/90 text-primary-foreground font-semibold shadow-md"
               onClick={handleDepositOpen}
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">DEPOSIT</span>
+              <span className="hidden xs:inline ml-1">Deposit</span>
             </Button>
             <Button 
               variant="outline"
-              className="border-primary/50 text-primary hover:bg-primary/10 font-semibold flex items-center gap-2"
+              size="sm"
+              className="h-8 sm:h-9 px-2.5 sm:px-4 border-primary/50 text-primary hover:bg-primary/10 font-medium"
               onClick={handleWithdrawalOpen}
             >
               <ArrowDownToLine className="w-4 h-4" />
-              <span className="hidden sm:inline">WITHDRAW</span>
+              <span className="hidden sm:inline ml-1.5">Withdraw</span>
             </Button>
             
-            {/* User dropdown with Agent options */}
+            {/* User dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 px-3 py-2 bg-secondary/50 hover:bg-secondary">
-                  <User className="w-4 h-4 text-primary" />
-                  <span className="text-foreground font-medium">{username}</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-8 sm:h-9 px-2 sm:px-3 bg-secondary/50 hover:bg-secondary gap-1.5"
+                >
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <User className="w-3.5 h-3.5 text-primary-foreground" />
+                  </div>
+                  <span className="hidden sm:inline text-foreground font-medium text-sm max-w-[80px] truncate">{username}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -130,15 +127,21 @@ const Header = () => {
             </DropdownMenu>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <button 
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button 
+              variant="ghost" 
+              size="sm"
               onClick={handleAuthOpen}
-              className="text-foreground/80 hover:text-foreground font-medium transition-colors"
+              className="h-8 sm:h-9 px-3 text-foreground/80 hover:text-foreground font-medium"
             >
               Log in
-            </button>
-            <Button className="btn-outline-light" onClick={handleAuthOpen}>
-              REGISTER
+            </Button>
+            <Button 
+              size="sm"
+              className="h-8 sm:h-9 px-3 sm:px-4 bg-gradient-to-r from-primary to-teal-600 text-primary-foreground font-semibold shadow-md" 
+              onClick={handleAuthOpen}
+            >
+              Register
             </Button>
           </div>
         )}
