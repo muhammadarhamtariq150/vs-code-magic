@@ -322,6 +322,167 @@ serve(async (req) => {
       });
     }
 
+    // Get real-time betting stats for a round (admin)
+    if (action === "get-betting-stats") {
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      if (userError || !user) {
+        return new Response(JSON.stringify({ error: "Invalid user" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Check if admin
+      const { data: adminRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!adminRole) {
+        return new Response(JSON.stringify({ error: "Admin access required" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const durationType = url.searchParams.get("duration") || "1min";
+
+      // Get active round
+      const { data: activeRound } = await supabase
+        .from("wingo_rounds")
+        .select("*")
+        .eq("duration_type", durationType)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!activeRound) {
+        return new Response(JSON.stringify({ 
+          stats: null, 
+          message: "No active round" 
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Get all bets for this round
+      const { data: bets } = await supabase
+        .from("wingo_bets")
+        .select("*")
+        .eq("round_id", activeRound.id);
+
+      // Calculate stats
+      const stats = {
+        roundId: activeRound.id,
+        periodId: activeRound.period_id,
+        endTime: activeRound.end_time,
+        totalBets: 0,
+        totalAmount: 0,
+        colors: {
+          green: { count: 0, amount: 0 },
+          red: { count: 0, amount: 0 },
+          violet: { count: 0, amount: 0 },
+        },
+        sizes: {
+          big: { count: 0, amount: 0 },
+          small: { count: 0, amount: 0 },
+        },
+        numbers: {} as Record<string, { count: number; amount: number }>,
+      };
+
+      // Initialize numbers
+      for (let i = 0; i <= 9; i++) {
+        stats.numbers[i.toString()] = { count: 0, amount: 0 };
+      }
+
+      if (bets) {
+        for (const bet of bets) {
+          stats.totalBets++;
+          stats.totalAmount += bet.amount;
+
+          if (bet.bet_type === "color") {
+            const color = bet.bet_value as "green" | "red" | "violet";
+            stats.colors[color].count++;
+            stats.colors[color].amount += bet.amount;
+          } else if (bet.bet_type === "size") {
+            const size = bet.bet_value as "big" | "small";
+            stats.sizes[size].count++;
+            stats.sizes[size].amount += bet.amount;
+          } else if (bet.bet_type === "number") {
+            stats.numbers[bet.bet_value].count++;
+            stats.numbers[bet.bet_value].amount += bet.amount;
+          }
+        }
+      }
+
+      // Calculate potential payouts for each outcome
+      const potentialPayouts: Record<number, number> = {};
+      for (let num = 0; num <= 9; num++) {
+        let payout = 0;
+        const color = getColorForNumber(num);
+        const size = getSizeForNumber(num);
+
+        // Number bets payout
+        payout += (stats.numbers[num.toString()]?.amount || 0) * 9;
+
+        // Color bets payout
+        if (color === "violet") {
+          payout += stats.colors.violet.amount * 4.5;
+        }
+        if (num % 2 === 0) {
+          payout += stats.colors.red.amount * 2;
+        } else {
+          payout += stats.colors.green.amount * 2;
+        }
+        // 0 also counts as green, 5 also counts as... no wait
+        // Actually: 0 = violet+red, 5 = violet+green
+        if (num === 0) {
+          payout += stats.colors.green.amount * 2; // 0 is also green for betting
+        }
+
+        // Size bets payout
+        if (size === "big") {
+          payout += stats.sizes.big.amount * 2;
+        } else {
+          payout += stats.sizes.small.amount * 2;
+        }
+
+        potentialPayouts[num] = payout;
+      }
+
+      // Find best number for house (lowest payout)
+      const sortedByPayout = Object.entries(potentialPayouts)
+        .sort(([, a], [, b]) => a - b);
+      
+      const recommendation = {
+        bestForHouse: parseInt(sortedByPayout[0][0]),
+        bestForHousePayout: sortedByPayout[0][1],
+        worstForHouse: parseInt(sortedByPayout[9][0]),
+        worstForHousePayout: sortedByPayout[9][1],
+        potentialPayouts,
+      };
+
+      return new Response(JSON.stringify({ 
+        stats, 
+        recommendation,
+        houseTake: stats.totalAmount,
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Process round completion (called by cron or manually)
     if (action === "process-rounds") {
       const durationTypes = ["1min", "2min", "3min", "5min"];
