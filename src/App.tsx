@@ -27,6 +27,7 @@ import Crash from "./pages/games/Crash";
 import ChickenRoad from "./pages/games/ChickenRoad";
 
 // User pages
+import ProfilePage from "./pages/ProfilePage";
 import PersonalInfo from "./pages/PersonalInfo";
 import AgentManagement from "./pages/AgentManagement";
 import AgentPromoCode from "./pages/AgentPromoCode";
@@ -90,6 +91,7 @@ const App = () => (
           <Route path="/admin/games/wingo" element={<WingoControl />} />
           
           {/* User Profile Routes */}
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/personal-info" element={<PersonalInfo />} />
           <Route path="/agent-management" element={<AgentManagement />} />
           <Route path="/agent-promo-code" element={<AgentPromoCode />} />
