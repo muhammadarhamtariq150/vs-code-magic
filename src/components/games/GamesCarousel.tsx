@@ -119,7 +119,7 @@ const GamesCarousel = ({ searchQuery, activeCategory }: GamesCarouselProps) => {
         {filteredGames.map((game) => (
           <div
             key={game.id}
-            className="flex-shrink-0 w-[140px] sm:w-[160px] md:w-[180px] snap-start"
+            className="flex-shrink-0 w-[calc(33.333%-8px)] min-w-[100px] max-w-[140px] sm:w-[140px] sm:max-w-none md:w-[160px] snap-start"
           >
             <GameCard
               name={game.name}
