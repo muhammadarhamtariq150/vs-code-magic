@@ -1,5 +1,6 @@
 import { Flame, Gamepad2, Fish, Ticket, PlaySquare, Trophy, Radio, Dribbble, ClipboardList, Crown, Gift } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -35,6 +36,7 @@ interface SidebarProps {
 
 const Sidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
   const { playClick } = useSound();
+  const navigate = useNavigate();
   
   const mainCategories = [
     { id: 'lobby', icon: <Flame />, label: 'Lobby' },
@@ -63,7 +65,10 @@ const Sidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
       
       <div 
         className="mt-4 p-3 rounded-xl bg-secondary/50 flex items-center gap-2 cursor-pointer hover:bg-secondary transition-colors"
-        onClick={() => playClick()}
+        onClick={() => {
+          playClick();
+          navigate("/bet-records");
+        }}
       >
         <ClipboardList className="text-primary" />
         <span className="text-sm font-medium text-primary">Bet Records</span>
@@ -72,7 +77,10 @@ const Sidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
       <div className="mt-auto grid grid-cols-2 gap-2">
         <div 
           className="rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-          onClick={() => playClick()}
+          onClick={() => {
+            playClick();
+            navigate("/profile");
+          }}
         >
           <div className="bg-gradient-to-br from-amber-600 to-amber-800 p-3 flex flex-col items-center">
             <Crown className="text-yellow-300 mb-1" />
@@ -81,7 +89,10 @@ const Sidebar = ({ activeCategory, onCategoryChange }: SidebarProps) => {
         </div>
         <div 
           className="rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-          onClick={() => playClick()}
+          onClick={() => {
+            playClick();
+            navigate("/promo");
+          }}
         >
           <div className="bg-gradient-to-br from-purple-600 to-purple-800 p-3 flex flex-col items-center">
             <Gift className="text-purple-200 mb-1" />
