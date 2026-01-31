@@ -434,7 +434,7 @@ const Wingo = () => {
             {/* Bet Amount Selection */}
             <div className="mb-4">
               <p className="text-sm text-gray-500 mb-2">Contract Money</p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2 mb-3">
                 {BET_AMOUNTS.map((amount) => (
                   <button
                     key={amount}
@@ -448,6 +448,22 @@ const Wingo = () => {
                     {amount}
                   </button>
                 ))}
+              </div>
+              {/* Custom Amount Input */}
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500">₨</span>
+                <input
+                  type="number"
+                  min="1"
+                  max={balance}
+                  value={betAmount}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    setBetAmount(Math.max(1, Math.min(value, balance)));
+                  }}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-lg font-bold"
+                  placeholder="Enter amount"
+                />
               </div>
             </div>
 
