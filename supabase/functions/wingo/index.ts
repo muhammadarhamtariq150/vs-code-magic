@@ -63,7 +63,27 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Helper function to validate user from auth header
+    const validateUser = async (authHeader: string | null) => {
+      if (!authHeader?.startsWith("Bearer ")) {
+        return { user: null, error: "No authorization header" };
+      }
+      const token = authHeader.replace("Bearer ", "");
+      
+      // Create a client with the user's token for auth validation
+      const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data, error } = await userClient.auth.getUser();
+      if (error || !data.user) {
+        return { user: null, error: "Invalid or expired session" };
+      }
+      return { user: data.user, error: null };
+    };
 
     const url = new URL(req.url);
     const action = url.searchParams.get("action");
@@ -130,17 +150,9 @@ serve(async (req) => {
     // Place a bet
     if (action === "place-bet" && req.method === "POST") {
       const authHeader = req.headers.get("Authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      const { user, error: userError } = await validateUser(authHeader);
       if (userError || !user) {
-        return new Response(JSON.stringify({ error: "Invalid user" }), {
+        return new Response(JSON.stringify({ error: userError || "Invalid user" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -230,17 +242,9 @@ serve(async (req) => {
     // Admin: Set next result
     if (action === "set-next-result" && req.method === "POST") {
       const authHeader = req.headers.get("Authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      const { user, error: userError } = await validateUser(authHeader);
       if (userError || !user) {
-        return new Response(JSON.stringify({ error: "Invalid user" }), {
+        return new Response(JSON.stringify({ error: userError || "Invalid user" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -294,17 +298,9 @@ serve(async (req) => {
     // Admin: Get current controls
     if (action === "get-controls") {
       const authHeader = req.headers.get("Authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      const { user, error: userError } = await validateUser(authHeader);
       if (userError || !user) {
-        return new Response(JSON.stringify({ error: "Invalid user" }), {
+        return new Response(JSON.stringify({ error: userError || "Invalid user" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -325,17 +321,9 @@ serve(async (req) => {
     // Get real-time betting stats for a round (admin)
     if (action === "get-betting-stats") {
       const authHeader = req.headers.get("Authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+      const { user, error: userError } = await validateUser(authHeader);
       if (userError || !user) {
-        return new Response(JSON.stringify({ error: "Invalid user" }), {
+        return new Response(JSON.stringify({ error: userError || "Invalid user" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
