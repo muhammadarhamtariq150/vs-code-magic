@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2, KeyRound } from "lucide-react";
+import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2, KeyRound, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -26,6 +26,8 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [promoCodeValid, setPromoCodeValid] = useState<boolean | null>(null);
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -33,11 +35,47 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   // Store the generated OTP for verification
   const generatedOTPRef = useRef<string>("");
 
+  // Check for promo code in URL on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCode = urlParams.get("invite");
+    if (inviteCode) {
+      setPromoCode(inviteCode.toUpperCase());
+      validatePromoCode(inviteCode.toUpperCase());
+    }
+  }, []);
+
+  // Validate promo code
+  const validatePromoCode = async (code: string) => {
+    if (!code.trim()) {
+      setPromoCodeValid(null);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("referral_codes")
+        .select("user_id")
+        .eq("code", code.toUpperCase())
+        .single();
+
+      if (error || !data) {
+        setPromoCodeValid(false);
+      } else {
+        setPromoCodeValid(true);
+      }
+    } catch {
+      setPromoCodeValid(false);
+    }
+  };
+
   const resetForm = () => {
     setUsername("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setPromoCode("");
+    setPromoCodeValid(null);
     setOtpCode("");
     setStep("form");
     generatedOTPRef.current = "";
@@ -150,16 +188,37 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       return;
     }
 
+    // Validate promo code if provided
+    if (promoCode.trim() && promoCodeValid === false) {
+      toast.error("Invalid promo code");
+      return;
+    }
+
     setLoading(true);
     try {
+      // Get agent_id from promo code if valid
+      let agentId: string | null = null;
+      if (promoCode.trim() && promoCodeValid) {
+        const { data: codeData } = await supabase
+          .from("referral_codes")
+          .select("user_id")
+          .eq("code", promoCode.toUpperCase())
+          .single();
+        
+        if (codeData) {
+          agentId = codeData.user_id;
+        }
+      }
+
       // Direct registration without email verification
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             username: username.trim(),
+            promo_code: promoCode.trim().toUpperCase() || null,
           },
         },
       });
@@ -174,7 +233,18 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
         return;
       }
 
-      toast.success("Account created successfully! Welcome!");
+      // Update profile with agent_id if promo code was used
+      if (agentId && signUpData.user) {
+        await supabase
+          .from("profiles")
+          .update({ agent_id: agentId })
+          .eq("user_id", signUpData.user.id);
+
+        // Note: uses_count will be updated by the agent when they view their stats
+      }
+
+      const bonusMsg = promoCode.trim() && promoCodeValid ? " You'll receive ₨100 bonus after your first deposit!" : "";
+      toast.success(`Account created successfully!${bonusMsg}`);
       resetForm();
       onOpenChange(false);
     } catch (error: any) {
@@ -559,6 +629,46 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   >
                     {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                   </button>
+                </div>
+              )}
+
+              {/* Promo Code - only for register */}
+              {activeTab === "register" && (
+                <div className="relative">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Gift className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-muted-foreground">Have a promo code? (Optional)</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter promo code (e.g. ABC123)"
+                    value={promoCode}
+                    onChange={(e) => {
+                      const code = e.target.value.toUpperCase();
+                      setPromoCode(code);
+                      if (code.length >= 6) {
+                        validatePromoCode(code);
+                      } else {
+                        setPromoCodeValid(null);
+                      }
+                    }}
+                    disabled={loading}
+                    className={`w-full bg-background/50 border rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none transition-colors disabled:opacity-50 font-mono uppercase ${
+                      promoCodeValid === true 
+                        ? "border-green-500 bg-green-500/10" 
+                        : promoCodeValid === false 
+                        ? "border-red-500 bg-red-500/10"
+                        : "border-border/50 focus:border-primary/50"
+                    }`}
+                  />
+                  {promoCodeValid === true && (
+                    <p className="text-xs text-green-500 mt-1 flex items-center gap-1">
+                      <Gift className="w-3 h-3" /> Valid code! You'll get ₨100 bonus after first deposit
+                    </p>
+                  )}
+                  {promoCodeValid === false && (
+                    <p className="text-xs text-red-500 mt-1">Invalid promo code</p>
+                  )}
                 </div>
               )}
 

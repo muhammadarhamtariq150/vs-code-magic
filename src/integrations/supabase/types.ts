@@ -272,6 +272,63 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_bonuses: {
+        Row: {
+          created_at: string
+          id: string
+          referred_bonus: number
+          referred_id: string
+          referrer_bonus: number
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_bonus?: number
+          referred_id: string
+          referrer_bonus?: number
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_bonus?: number
+          referred_id?: string
+          referrer_bonus?: number
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
       usdt_wallets: {
         Row: {
           created_at: string
