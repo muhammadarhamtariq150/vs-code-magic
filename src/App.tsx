@@ -26,6 +26,12 @@ import Keno from "./pages/games/Keno";
 import Crash from "./pages/games/Crash";
 import ChickenRoad from "./pages/games/ChickenRoad";
 
+// User pages
+import PersonalInfo from "./pages/PersonalInfo";
+import AgentManagement from "./pages/AgentManagement";
+import AgentPromoCode from "./pages/AgentPromoCode";
+import BetRecords from "./pages/BetRecords";
+
 // Admin pages
 import Dashboard from "./pages/admin/Dashboard";
 import MemberDetails from "./pages/admin/MemberDetails";
@@ -82,6 +88,12 @@ const App = () => (
           <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
           <Route path="/admin/games/wingo" element={<WingoControl />} />
+          
+          {/* User Profile Routes */}
+          <Route path="/personal-info" element={<PersonalInfo />} />
+          <Route path="/agent-management" element={<AgentManagement />} />
+          <Route path="/agent-promo-code" element={<AgentPromoCode />} />
+          <Route path="/bet-records" element={<BetRecords />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
