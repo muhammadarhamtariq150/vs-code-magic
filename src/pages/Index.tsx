@@ -99,7 +99,7 @@ const Index = () => {
               />
             </div>
             
-            <GamesGrid searchQuery={searchQuery} />
+            <GamesGrid searchQuery={searchQuery} activeCategory={activeCategory} />
           </main>
         </div>
       )}
