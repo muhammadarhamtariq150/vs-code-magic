@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, Spade, LogOut, User, Plus, Shield, ArrowDownToLine } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, Spade, LogOut, User, Plus, Shield, ArrowDownToLine, Users, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AuthDialog from "@/components/auth/AuthDialog";
 import DepositDialog from "@/components/deposit/DepositDialog";
@@ -8,6 +8,12 @@ import WithdrawalDialog from "@/components/withdrawal/WithdrawalDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useSound } from "@/hooks/useSound";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [authOpen, setAuthOpen] = useState(false);
@@ -16,6 +22,7 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { playClick, playDeposit } = useSound();
+  const navigate = useNavigate();
 
   const username = user?.user_metadata?.username || "Player";
 
@@ -69,7 +76,7 @@ const Header = () => {
         </div>
         
         {user ? (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {isAdmin && (
               <Link to="/admin" onClick={() => playClick()}>
                 <Button variant="outline" className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10">
@@ -93,17 +100,34 @@ const Header = () => {
               <ArrowDownToLine className="w-4 h-4" />
               <span className="hidden sm:inline">WITHDRAW</span>
             </Button>
-            <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg">
-              <User className="w-4 h-4 text-primary" />
-              <span className="text-foreground font-medium">{username}</span>
-            </div>
-            <Button 
-              className="btn-outline-light flex items-center gap-2" 
-              onClick={handleSignOut}
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
+            
+            {/* User dropdown with Agent options */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-foreground font-medium">{username}</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => { playClick(); navigate("/profile"); }}>
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { playClick(); navigate("/agent-management"); }}>
+                  <Users className="w-4 h-4 mr-2" />
+                  Agent Management
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { playClick(); navigate("/agent-promo-code"); }}>
+                  <Link2 className="w-4 h-4 mr-2" />
+                  Agent Promo-Code
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ) : (
           <div className="flex items-center gap-3">
