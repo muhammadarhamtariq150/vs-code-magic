@@ -104,10 +104,10 @@ const Header = () => {
             {/* User dropdown with Agent options */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer">
+                <Button variant="ghost" className="flex items-center gap-2 px-3 py-2 bg-secondary/50 hover:bg-secondary">
                   <User className="w-4 h-4 text-primary" />
                   <span className="text-foreground font-medium">{username}</span>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={() => { playClick(); navigate("/profile"); }}>
