@@ -50,7 +50,7 @@ const Index = () => {
               />
             </div>
             
-            <GamesCarousel searchQuery={searchQuery} activeCategory={activeCategory} />
+            <GamesGrid searchQuery={searchQuery} activeCategory={activeCategory} />
           </main>
         );
     }
