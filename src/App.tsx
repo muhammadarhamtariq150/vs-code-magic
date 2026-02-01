@@ -28,6 +28,7 @@ import ChickenRoad from "./pages/games/ChickenRoad";
 
 // User pages
 import ProfilePage from "./pages/ProfilePage";
+import PromoPage from "./pages/PromoPage";
 import PersonalInfo from "./pages/PersonalInfo";
 import AgentManagement from "./pages/AgentManagement";
 import AgentPromoCode from "./pages/AgentPromoCode";
@@ -92,6 +93,7 @@ const App = () => (
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/promo" element={<PromoPage />} />
           <Route path="/personal-info" element={<PersonalInfo />} />
           <Route path="/agent-management" element={<AgentManagement />} />
           <Route path="/agent-promo-code" element={<AgentPromoCode />} />
