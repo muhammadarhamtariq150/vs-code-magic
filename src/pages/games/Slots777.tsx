@@ -6,30 +6,24 @@ import { useWallet } from "@/hooks/useWallet";
 import { useAuth } from "@/hooks/useAuth";
 import WalletDisplay from "@/components/games/WalletDisplay";
 import SlotMachine from "@/components/games/slots/SlotMachine";
-import { Symbol } from "@/components/games/slots/SlotSymbol";
+import { Symbol, SLOT_SYMBOLS } from "@/components/games/slots/SlotSymbol";
 import { toast } from "sonner";
 
-// Classic 3-reel symbols matching the reference
-const SYMBOLS: Symbol[] = [
-  { icon: "7", name: "Seven" },
-  { icon: "BAR", name: "Bar", isBar: true },
-  { icon: "🍒", name: "Cherry" },
-  { icon: "🔔", name: "Bell" },
-  { icon: "⭐", name: "Star" },
-  { icon: "RESPIN", name: "Respin" },
-];
+// Use fruit symbols from SlotSymbol
+const SYMBOLS = SLOT_SYMBOLS;
 
 const PAYOUTS: Record<string, number> = {
   Seven: 200,
-  Bar: 20,
-  Cherry: 8,
-  Bell: 10,
-  Star: 15,
-  Respin: 4,
+  Cherry: 15,
+  Grape: 12,
+  Lemon: 8,
+  Orange: 10,
+  Star: 50,
+  Kiwi: 6,
 };
 
 const BET_OPTIONS = [0.6, 1, 2, 5, 10, 20];
-const REEL_COUNT = 3;
+const REEL_COUNT = 5;
 const ROW_COUNT = 3;
 
 const getRandomSymbol = (): Symbol => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
@@ -47,7 +41,7 @@ const Slots777 = () => {
 
   const [betAmount, setBetAmount] = useState<number>(0.6);
   const [reels, setReels] = useState<Symbol[][]>(() =>
-    Array.from({ length: REEL_COUNT }, () => [SYMBOLS[0], SYMBOLS[1], SYMBOLS[0]])
+    Array.from({ length: REEL_COUNT }, () => [SYMBOLS[0], SYMBOLS[1], SYMBOLS[2]])
   );
   const [spinningReels, setSpinningReels] = useState<boolean[]>(Array(REEL_COUNT).fill(false));
   const [lastWin, setLastWin] = useState<number>(0);
@@ -55,6 +49,9 @@ const Slots777 = () => {
   const [turboMode, setTurboMode] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [jackpotValues, setJackpotValues] = useState<number[]>([
+    23888003, 423567008, 7353999087, 31215330000, 391666909407
+  ]);
 
   // Audio context for sound effects
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -172,14 +169,24 @@ const Slots777 = () => {
     let totalWin = 0;
     const allPositions: { reel: number; row: number }[] = [];
 
-    // Check middle row (main payline)
+    // Check middle row (main payline) - need at least 3 matching from left
     const middleRow = finalReels.map((reel) => reel[1]);
-    const middleSymbol = middleRow[0].name;
+    const firstSymbol = middleRow[0].name;
+    let matchCount = 1;
 
-    if (middleRow.every((s) => s.name === middleSymbol)) {
-      const multiplier = PAYOUTS[middleSymbol] || 2;
-      totalWin = betAmount * multiplier;
-      for (let i = 0; i < REEL_COUNT; i++) {
+    for (let i = 1; i < middleRow.length; i++) {
+      if (middleRow[i].name === firstSymbol) {
+        matchCount++;
+      } else {
+        break;
+      }
+    }
+
+    if (matchCount >= 3) {
+      const baseMultiplier = PAYOUTS[firstSymbol] || 2;
+      const countMultiplier = matchCount === 3 ? 1 : matchCount === 4 ? 3 : 10;
+      totalWin = betAmount * baseMultiplier * countMultiplier;
+      for (let i = 0; i < matchCount; i++) {
         allPositions.push({ reel: i, row: 1 });
       }
     }
@@ -216,8 +223,11 @@ const Slots777 = () => {
     const finalReels = generateAllReels();
 
     // Spin timing based on turbo mode
-    const baseDelay = turboMode ? 250 : 500;
-    const stopDelays = [baseDelay, baseDelay * 2, baseDelay * 3];
+    const baseDelay = turboMode ? 200 : 400;
+    const stopDelays = Array.from({ length: REEL_COUNT }, (_, i) => baseDelay * (i + 1));
+
+    // Increment jackpot values slightly
+    setJackpotValues(prev => prev.map(v => v + Math.floor(Math.random() * 100)));
 
     // Spinning animation for each reel
     const spinIntervals: NodeJS.Timeout[] = [];
@@ -358,22 +368,37 @@ const Slots777 = () => {
       <div className="relative z-10 container max-w-md mx-auto px-2 py-2 sm:py-4">
         {/* Paytable */}
         <div className="bg-gradient-to-b from-red-800/90 to-red-950/90 rounded-lg p-2 mb-3 border border-yellow-600/40">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex items-center justify-between bg-black/40 rounded px-2 py-1.5">
-              <span className="text-red-400 font-black text-base" style={{ textShadow: '0 0 5px rgba(255,0,0,0.5)' }}>777</span>
-              <span className="text-yellow-400 font-bold">200</span>
+          <div className="grid grid-cols-4 gap-1 text-xs">
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">7️⃣</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×200</span>
             </div>
-            <div className="flex items-center justify-between bg-black/40 rounded px-2 py-1.5">
-              <span className="text-blue-400 font-black text-[10px]">BAR BAR BAR</span>
-              <span className="text-yellow-400 font-bold">20</span>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">⭐</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×50</span>
             </div>
-            <div className="flex items-center justify-between bg-black/40 rounded px-2 py-1.5">
-              <span>🍒🍒🍒</span>
-              <span className="text-yellow-400 font-bold">8</span>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">🍒</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×15</span>
             </div>
-            <div className="flex items-center justify-between bg-black/40 rounded px-2 py-1.5">
-              <span>🔔🔔🔔</span>
-              <span className="text-yellow-400 font-bold">10</span>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">🍇</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×12</span>
+            </div>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">🍊</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×10</span>
+            </div>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">🍋</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×8</span>
+            </div>
+            <div className="flex items-center justify-between bg-black/40 rounded px-1.5 py-1">
+              <span className="text-lg">🥝</span>
+              <span className="text-yellow-400 font-bold text-[10px]">×6</span>
+            </div>
+            <div className="flex items-center justify-center bg-black/40 rounded px-1.5 py-1">
+              <span className="text-yellow-400 font-bold text-[8px]">3+ MATCH</span>
             </div>
           </div>
         </div>
@@ -383,6 +408,7 @@ const Slots777 = () => {
           reels={reels}
           spinningReels={spinningReels}
           winningPositions={winningPositions}
+          jackpotValues={jackpotValues}
         />
 
         {/* Control Panel */}

@@ -6,9 +6,10 @@ interface SlotMachineProps {
   reels: Symbol[][];
   spinningReels: boolean[];
   winningPositions: { reel: number; row: number }[];
+  jackpotValues: number[];
 }
 
-const SlotMachine = memo(({ reels, spinningReels, winningPositions }: SlotMachineProps) => {
+const SlotMachine = memo(({ reels, spinningReels, winningPositions, jackpotValues }: SlotMachineProps) => {
   const getWinningRowsForReel = (reelIndex: number) => {
     return winningPositions
       .filter(pos => pos.reel === reelIndex)
@@ -17,79 +18,65 @@ const SlotMachine = memo(({ reels, spinningReels, winningPositions }: SlotMachin
 
   return (
     <div className="relative">
-      {/* Main slot machine frame - dark metallic */}
-      <div className="relative bg-gradient-to-b from-gray-700 via-gray-800 to-gray-900 rounded-2xl p-3 sm:p-4 shadow-2xl border-4 border-gray-600">
-        
-        {/* Inner chrome frame */}
-        <div className="relative bg-gradient-to-b from-gray-500 via-gray-600 to-gray-700 rounded-xl p-2 sm:p-3 border-2 border-gray-400">
+      {/* Outer golden frame with coins decoration */}
+      <div className="relative bg-gradient-to-b from-yellow-600 via-yellow-500 to-yellow-700 rounded-2xl p-2 sm:p-3 shadow-2xl">
+        {/* Decorative coins on corners */}
+        <div className="absolute -top-2 -left-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg z-20">
+          <span className="text-lg sm:text-xl">🪙</span>
+        </div>
+        <div className="absolute -top-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg z-20">
+          <span className="text-lg sm:text-xl">🪙</span>
+        </div>
+        <div className="absolute -bottom-2 -left-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg z-20">
+          <span className="text-lg sm:text-xl">🪙</span>
+        </div>
+        <div className="absolute -bottom-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-2 border-yellow-300 flex items-center justify-center shadow-lg z-20">
+          <span className="text-lg sm:text-xl">🪙</span>
+        </div>
+
+        {/* Inner red background */}
+        <div className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 rounded-xl p-2 sm:p-3 border-4 border-yellow-500/50">
           
-          {/* Top chrome highlight */}
-          <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent rounded-full" />
-          
-          {/* Reel window with payline */}
-          <div className="relative flex items-center">
-            {/* Left payline arrow - yellow */}
-            <div className="absolute -left-5 sm:-left-7 top-1/2 -translate-y-1/2 z-20">
-              <div 
-                className="w-0 h-0 border-t-[14px] border-b-[14px] border-l-[18px] sm:border-t-[18px] sm:border-b-[18px] sm:border-l-[24px] border-t-transparent border-b-transparent border-l-yellow-400"
-                style={{ filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.8))' }}
-              />
-            </div>
+          {/* Sparkle effects */}
+          <div className="absolute top-2 left-4 w-2 h-2 bg-yellow-300 rounded-full animate-ping opacity-75" />
+          <div className="absolute top-4 right-6 w-1.5 h-1.5 bg-yellow-200 rounded-full animate-ping opacity-60" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute bottom-4 left-8 w-1 h-1 bg-white rounded-full animate-ping opacity-50" style={{ animationDelay: '1s' }} />
 
-            {/* Right payline arrow - yellow */}
-            <div className="absolute -right-5 sm:-right-7 top-1/2 -translate-y-1/2 z-20">
-              <div 
-                className="w-0 h-0 border-t-[14px] border-b-[14px] border-r-[18px] sm:border-t-[18px] sm:border-b-[18px] sm:border-r-[24px] border-t-transparent border-b-transparent border-r-yellow-400"
-                style={{ filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.8))' }}
-              />
-            </div>
-
-            {/* Payline horizontal glow line */}
-            <div 
-              className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-yellow-400 z-10 pointer-events-none" 
-              style={{ boxShadow: '0 0 10px rgba(250, 204, 21, 0.9), 0 0 20px rgba(250, 204, 21, 0.5)' }} 
-            />
-
-            {/* Reels container */}
-            <div className="flex gap-1 sm:gap-2 w-full px-1">
-              {reels.map((reelSymbols, reelIndex) => (
-                <SlotReel
-                  key={reelIndex}
-                  symbols={reelSymbols}
-                  isSpinning={spinningReels[reelIndex]}
-                  winningRows={getWinningRowsForReel(reelIndex)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom orange triangle decorations */}
-          <div className="flex justify-center gap-0.5 mt-2">
-            {[...Array(16)].map((_, i) => (
-              <div
-                key={i}
-                className="w-0 h-0 border-l-[5px] border-r-[5px] border-t-[8px] border-l-transparent border-r-transparent border-t-orange-500"
+          {/* 5 Reels container */}
+          <div className="flex gap-1 sm:gap-2">
+            {reels.map((reelSymbols, reelIndex) => (
+              <SlotReel
+                key={reelIndex}
+                symbols={reelSymbols}
+                isSpinning={spinningReels[reelIndex]}
+                winningRows={getWinningRowsForReel(reelIndex)}
+                jackpotValue={jackpotValues[reelIndex]}
               />
             ))}
           </div>
+
+          {/* Center payline indicator */}
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+            <div className="h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-60" />
+          </div>
         </div>
 
-        {/* Side decorative lights */}
-        <div className="absolute left-1.5 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-          {[...Array(4)].map((_, i) => (
+        {/* Side LED lights */}
+        <div className="absolute left-0.5 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"
-              style={{ animationDelay: `${i * 0.15}s` }}
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50"
+              style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}
         </div>
-        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-          {[...Array(4)].map((_, i) => (
+        <div className="absolute right-0.5 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"
-              style={{ animationDelay: `${i * 0.15 + 0.08}s` }}
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-yellow-400 animate-pulse shadow-lg shadow-yellow-400/50"
+              style={{ animationDelay: `${i * 0.2 + 0.1}s` }}
             />
           ))}
         </div>

@@ -3,8 +3,18 @@ import { memo } from "react";
 export interface Symbol {
   icon: string;
   name: string;
-  isBar?: boolean;
 }
+
+// Fruit symbols matching the reference
+export const SLOT_SYMBOLS: Symbol[] = [
+  { icon: "🍒", name: "Cherry" },
+  { icon: "🍋", name: "Lemon" },
+  { icon: "🍇", name: "Grape" },
+  { icon: "🍊", name: "Orange" },
+  { icon: "⭐", name: "Star" },
+  { icon: "🥝", name: "Kiwi" },
+  { icon: "7️⃣", name: "Seven" },
+];
 
 interface SlotSymbolProps {
   symbol: Symbol;
@@ -13,98 +23,50 @@ interface SlotSymbolProps {
 }
 
 const SlotSymbol = memo(({ symbol, isSpinning = false, isWinning = false }: SlotSymbolProps) => {
-  // BAR symbol - blue text on white background
-  if (symbol.isBar) {
-    return (
-      <div
-        className={`
-          relative w-full h-full flex items-center justify-center
-          bg-gradient-to-b from-white via-gray-100 to-gray-200
-          border-2 border-blue-900 rounded-md shadow-inner
-          transition-all duration-200
-          ${isSpinning ? "blur-[3px]" : "blur-0"}
-          ${isWinning ? "ring-2 ring-yellow-400 shadow-lg shadow-yellow-500/50 scale-105" : ""}
-        `}
-      >
-        <span 
-          className="text-xl sm:text-2xl md:text-3xl font-black text-blue-900 tracking-tighter"
-          style={{ fontFamily: 'Arial Black, Impact, sans-serif' }}
-        >
-          BAR
-        </span>
-        {isWinning && (
-          <div className="absolute inset-0 bg-yellow-400/20 animate-pulse rounded-md" />
-        )}
-      </div>
-    );
-  }
-
-  // 7 symbol - fiery red
+  // Seven symbol - special fiery red styling
   if (symbol.name === "Seven") {
     return (
       <div
         className={`
           relative w-full h-full flex items-center justify-center
-          bg-gradient-to-b from-white via-gray-50 to-gray-200
-          rounded-md shadow-inner
+          bg-gradient-to-b from-red-900 via-red-800 to-red-900
+          rounded-lg
           transition-all duration-200
-          ${isSpinning ? "blur-[3px]" : "blur-0"}
+          ${isSpinning ? "blur-[2px]" : "blur-0"}
           ${isWinning ? "ring-2 ring-yellow-400 shadow-lg shadow-yellow-500/50 scale-105" : ""}
         `}
       >
         <span 
-          className="text-4xl sm:text-5xl md:text-6xl font-black"
+          className="text-5xl sm:text-6xl md:text-7xl font-black drop-shadow-lg"
           style={{ 
-            fontFamily: 'Arial Black, Impact, sans-serif',
-            color: '#ff2222',
-            textShadow: '2px 2px 0 #aa0000, -1px -1px 0 #ff6600, 0 0 15px rgba(255,100,0,0.6)',
+            color: '#ff3333',
+            textShadow: '3px 3px 0 #aa0000, -2px -2px 0 #ff6600, 0 0 20px rgba(255,100,0,0.8)',
           }}
         >
           7
         </span>
         {isWinning && (
-          <div className="absolute inset-0 bg-orange-400/20 animate-pulse rounded-md" />
+          <div className="absolute inset-0 bg-yellow-400/30 animate-pulse rounded-lg" />
         )}
       </div>
     );
   }
 
-  // RESPIN symbol
-  if (symbol.name === "Respin") {
-    return (
-      <div
-        className={`
-          relative w-full h-full flex flex-col items-center justify-center
-          bg-gradient-to-b from-cream-100 via-amber-50 to-amber-100
-          border border-amber-600 rounded-md
-          transition-all duration-200
-          ${isSpinning ? "blur-[3px]" : "blur-0"}
-          ${isWinning ? "ring-2 ring-yellow-400 shadow-lg shadow-yellow-500/50 scale-105" : ""}
-        `}
-      >
-        <span className="text-sm sm:text-base font-black text-amber-800" style={{ fontFamily: 'serif' }}>
-          RESPIN
-        </span>
-        <div className="w-0 h-0 border-l-4 border-r-4 border-t-6 border-l-transparent border-r-transparent border-t-purple-700 mt-0.5" />
-      </div>
-    );
-  }
-
-  // Default emoji symbols
+  // Default fruit symbols
   return (
     <div
       className={`
         relative w-full h-full flex items-center justify-center
-        bg-gradient-to-b from-white via-gray-100 to-gray-200
-        rounded-md shadow-inner
+        bg-gradient-to-b from-red-900 via-red-800 to-red-900
+        rounded-lg
         transition-all duration-200
-        ${isSpinning ? "blur-[3px]" : "blur-0"}
+        ${isSpinning ? "blur-[2px]" : "blur-0"}
         ${isWinning ? "ring-2 ring-yellow-400 shadow-lg shadow-yellow-500/50 scale-105" : ""}
       `}
     >
-      <span className="text-3xl sm:text-4xl md:text-5xl">{symbol.icon}</span>
+      <span className="text-4xl sm:text-5xl md:text-6xl drop-shadow-lg">{symbol.icon}</span>
       {isWinning && (
-        <div className="absolute inset-0 bg-yellow-400/20 animate-pulse rounded-md" />
+        <div className="absolute inset-0 bg-yellow-400/30 animate-pulse rounded-lg" />
       )}
     </div>
   );
