@@ -26,9 +26,17 @@ const Aviator = () => {
   const [crashed, setCrashed] = useState(false);
   const [betPlaced1, setBetPlaced1] = useState(false);
   const [betPlaced2, setBetPlaced2] = useState(false);
+  const [autoCashOut1, setAutoCashOut1] = useState(0);
+  const [autoCashOut2, setAutoCashOut2] = useState(0);
   const [history, setHistory] = useState<number[]>([2.96, 4.30, 5.15, 1.48, 1.09, 1.83, 4.96, 4.99, 1.46, 2.90, 4.63, 1.31, 11.14, 4.41]);
   const [roundId, setRoundId] = useState(Math.floor(10000000 + Math.random() * 90000000));
   const [gamePhase, setGamePhase] = useState<"waiting" | "flying" | "crashed">("waiting");
+  const autoCashOut1Ref = useRef(0);
+  const autoCashOut2Ref = useRef(0);
+  const betPlaced1Ref = useRef(false);
+  const betPlaced2Ref = useRef(false);
+  const hasCashedOut1Ref = useRef(false);
+  const hasCashedOut2Ref = useRef(false);
 
   const crashPointRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -72,6 +80,15 @@ const Aviator = () => {
 
       setMultiplier(newMult);
       sound.updateFlyingPitch(newMult);
+
+      // Auto cash-out check for panel 1
+      if (betPlaced1Ref.current && !hasCashedOut1Ref.current && autoCashOut1Ref.current > 0 && newMult >= autoCashOut1Ref.current) {
+        cashOut1Auto(newMult);
+      }
+      // Auto cash-out check for panel 2
+      if (betPlaced2Ref.current && !hasCashedOut2Ref.current && autoCashOut2Ref.current > 0 && newMult >= autoCashOut2Ref.current) {
+        cashOut2Auto(newMult);
+      }
     }, 40);
   }, [sound]);
 
@@ -95,12 +112,35 @@ const Aviator = () => {
 
     setBetPlaced1(false);
     setBetPlaced2(false);
+    betPlaced1Ref.current = false;
+    betPlaced2Ref.current = false;
 
     toast.error(`💥 Flew away at ${crashPoint}x!`);
 
     // Auto restart
     setTimeout(() => startRound(), 3000);
   }, [betPlaced1, betPlaced2, hasCashedOut1, hasCashedOut2, betAmount1, betAmount2, recordTransaction, sound, startRound]);
+
+  // Auto cash-out helpers (called from interval via refs)
+  const cashOut1Auto = useCallback(async (mult: number) => {
+    hasCashedOut1Ref.current = true;
+    setHasCashedOut1(true);
+    const winAmount = betAmount1 * mult;
+    await updateBalance(balance + winAmount);
+    await recordTransaction("Aviator", betAmount1, winAmount, "win");
+    sound.playCashOut();
+    toast.success(`🤖 Auto cashed out at ${mult.toFixed(2)}x! Won ₨${winAmount.toFixed(2)}!`);
+  }, [betAmount1, balance, updateBalance, recordTransaction, sound]);
+
+  const cashOut2Auto = useCallback(async (mult: number) => {
+    hasCashedOut2Ref.current = true;
+    setHasCashedOut2(true);
+    const winAmount = betAmount2 * mult;
+    await updateBalance(balance + winAmount);
+    await recordTransaction("Aviator", betAmount2, winAmount, "win");
+    sound.playCashOut();
+    toast.success(`🤖 Auto cashed out at ${mult.toFixed(2)}x! Won ₨${winAmount.toFixed(2)}!`);
+  }, [betAmount2, balance, updateBalance, recordTransaction, sound]);
 
   // Place bet on panel 1
   const placeBet1 = async () => {
@@ -109,6 +149,8 @@ const Aviator = () => {
     const success = await updateBalance(balance - betAmount1);
     if (!success) return toast.error("Failed to place bet");
     setBetPlaced1(true);
+    betPlaced1Ref.current = true;
+    hasCashedOut1Ref.current = false;
     sound.playBet();
   };
 
@@ -119,6 +161,8 @@ const Aviator = () => {
     const success = await updateBalance(balance - betAmount2);
     if (!success) return toast.error("Failed to place bet");
     setBetPlaced2(true);
+    betPlaced2Ref.current = true;
+    hasCashedOut2Ref.current = false;
     sound.playBet();
   };
 
@@ -126,6 +170,7 @@ const Aviator = () => {
   const cashOut1 = async () => {
     if (!isFlying || hasCashedOut1 || !betPlaced1) return;
     setHasCashedOut1(true);
+    hasCashedOut1Ref.current = true;
     const winAmount = betAmount1 * multiplier;
     await updateBalance(balance + winAmount);
     await recordTransaction("Aviator", betAmount1, winAmount, "win");
@@ -137,6 +182,7 @@ const Aviator = () => {
   const cashOut2 = async () => {
     if (!isFlying || hasCashedOut2 || !betPlaced2) return;
     setHasCashedOut2(true);
+    hasCashedOut2Ref.current = true;
     const winAmount = betAmount2 * multiplier;
     await updateBalance(balance + winAmount);
     await recordTransaction("Aviator", betAmount2, winAmount, "win");
@@ -200,6 +246,8 @@ const Aviator = () => {
           betPlaced={betPlaced1}
           multiplier={multiplier}
           panelLabel="Bet 1"
+          autoCashOut={autoCashOut1}
+          onAutoCashOutChange={(v) => { setAutoCashOut1(v); autoCashOut1Ref.current = v; }}
         />
         <AviatorBetPanel
           betAmount={betAmount2}
@@ -211,6 +259,8 @@ const Aviator = () => {
           betPlaced={betPlaced2}
           multiplier={multiplier}
           panelLabel="Bet 2"
+          autoCashOut={autoCashOut2}
+          onAutoCashOutChange={(v) => { setAutoCashOut2(v); autoCashOut2Ref.current = v; }}
         />
       </div>
     </div>
