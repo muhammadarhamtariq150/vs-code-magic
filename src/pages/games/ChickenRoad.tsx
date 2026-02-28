@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import { useToast } from "@/hooks/use-toast";
+import { useChickenRoadSound } from "@/hooks/useChickenRoadSound";
 import ChickenRoadHeader from "@/components/games/chicken-road/ChickenRoadHeader";
 import ChickenRoadBoard from "@/components/games/chicken-road/ChickenRoadBoard";
 import ChickenRoadControls from "@/components/games/chicken-road/ChickenRoadControls";
@@ -19,7 +20,7 @@ const multipliers = [1.04, 1.08, 1.13, 1.18, 1.24, 1.30, 1.37, 1.44, 1.52, 1.61]
 const ChickenRoad = () => {
   const { balance, updateBalance, recordTransaction } = useWallet();
   const { toast } = useToast();
-
+  const sound = useChickenRoadSound();
   const [betAmount, setBetAmount] = useState("2");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,10 +62,12 @@ const ChickenRoad = () => {
     setGameOver(false);
     setHitTrap(false);
     setIsPlaying(true);
+    sound.playStart();
   };
 
   const selectTile = (laneIndex: number, tileIndex: number) => {
     if (!isPlaying || gameOver || laneIndex !== currentLane + 1) return;
+    sound.playTileClick();
     const isTrap = lanes[laneIndex][tileIndex];
     const newRevealed = [...revealedTiles];
     newRevealed[laneIndex] = tileIndex;
@@ -72,23 +75,28 @@ const ChickenRoad = () => {
     setCurrentLane(laneIndex);
 
     if (isTrap) {
+      setTimeout(() => sound.playTrap(), 100);
       setHitTrap(true);
       setGameOver(true);
       setIsPlaying(false);
       recordTransaction("Chicken Road", parseFloat(betAmount), 0, "loss");
       toast({ title: "💀 Shot down!", description: "The chicken didn't make it!", variant: "destructive" });
     } else if (laneIndex === multipliers.length - 1) {
+      setTimeout(() => sound.playWin(), 100);
       const win = parseFloat(betAmount) * multipliers[laneIndex];
       updateBalance(balance + win);
       recordTransaction("Chicken Road", parseFloat(betAmount), win, "win");
       setGameOver(true);
       setIsPlaying(false);
       toast({ title: "🎉 Maximum Win!", description: `You won $${win.toFixed(2)}!` });
+    } else {
+      setTimeout(() => sound.playStep(), 50);
     }
   };
 
   const cashOut = () => {
     if (!isPlaying || currentLane < 0) return;
+    sound.playCashOut();
     const win = parseFloat(betAmount) * multipliers[currentLane];
     updateBalance(balance + win);
     recordTransaction("Chicken Road", parseFloat(betAmount), win, "win");
