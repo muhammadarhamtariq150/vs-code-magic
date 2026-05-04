@@ -297,6 +297,7 @@ const FastPaymentCheck = () => {
                   <TableHead>Method</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Transaction ID</TableHead>
+                  <TableHead>Sender Account</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -314,6 +315,9 @@ const FastPaymentCheck = () => {
                     </TableCell>
                     <TableCell className="font-mono text-sm">
                       {deposit.transaction_id || "-"}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {deposit.sender_account || "-"}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
