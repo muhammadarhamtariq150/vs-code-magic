@@ -107,6 +107,14 @@ const MemberFinancialRecords = () => {
         .lte("created_at", endDate.toISOString())
         .order("created_at", { ascending: false });
 
+      // Get Wingo bets joined with rounds for exact duration breakdown (works for historical data too)
+      const { data: wingoBets } = await supabase
+        .from("wingo_bets")
+        .select("amount, payout, is_winner, created_at, wingo_rounds!inner(duration_type)")
+        .eq("user_id", userId)
+        .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString());
+
       // Combine and sort all records
       const allRecords: FinancialRecord[] = [];
       let runningBalance = 0;
