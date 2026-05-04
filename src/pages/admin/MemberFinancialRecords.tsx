@@ -39,6 +39,7 @@ interface GameSummary {
 const MemberFinancialRecords = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [records, setRecords] = useState<FinancialRecord[]>([]);
+  const [gameSummary, setGameSummary] = useState<GameSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 7));
   const [endDate, setEndDate] = useState<Date>(new Date());
