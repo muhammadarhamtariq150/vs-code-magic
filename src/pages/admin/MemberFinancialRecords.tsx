@@ -28,9 +28,18 @@ interface FinancialRecord {
   created_at: string;
 }
 
+interface GameSummary {
+  game_name: string;
+  total_bet: number;
+  total_win: number;
+  net: number; // win - bet (negative => loss)
+  rounds: number;
+}
+
 const MemberFinancialRecords = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [records, setRecords] = useState<FinancialRecord[]>([]);
+  const [gameSummary, setGameSummary] = useState<GameSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>(subDays(new Date(), 7));
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -161,7 +170,27 @@ const MemberFinancialRecords = () => {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
+      // Build per-game summary (bet/win/loss) — Wingo split by 1/3/5/10 min
+      const summaryMap = new Map<string, GameSummary>();
+      transactions?.forEach((t) => {
+        const name = t.game_name || "Unknown";
+        const cur = summaryMap.get(name) || {
+          game_name: name,
+          total_bet: 0,
+          total_win: 0,
+          net: 0,
+          rounds: 0,
+        };
+        cur.total_bet += Number(t.bet_amount) || 0;
+        cur.total_win += Number(t.win_amount) || 0;
+        cur.net = cur.total_win - cur.total_bet;
+        cur.rounds += 1;
+        summaryMap.set(name, cur);
+      });
+      const summary = Array.from(summaryMap.values()).sort((a, b) => a.net - b.net);
+
       setRecords(allRecords);
+      setGameSummary(summary);
     } catch (error: any) {
       toast({
         title: "Search failed",
@@ -236,6 +265,47 @@ const MemberFinancialRecords = () => {
             <DateRangeFilter onDateChange={handleDateChange} />
           </CardContent>
         </Card>
+
+        {gameSummary.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Game-wise P&L for {memberUsername}</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Wingo is split by duration (1 / 3 / 5 / 10 min) so you can see exactly where the loss happened.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Game</TableHead>
+                    <TableHead className="text-right">Rounds</TableHead>
+                    <TableHead className="text-right">Total Bet</TableHead>
+                    <TableHead className="text-right">Total Win</TableHead>
+                    <TableHead className="text-right">Net (Win - Loss)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {gameSummary.map((g) => (
+                    <TableRow key={g.game_name}>
+                      <TableCell className="font-medium capitalize">{g.game_name}</TableCell>
+                      <TableCell className="text-right">{g.rounds}</TableCell>
+                      <TableCell className="text-right">₹{g.total_bet.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">₹{g.total_win.toLocaleString()}</TableCell>
+                      <TableCell
+                        className={`text-right font-semibold ${
+                          g.net >= 0 ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
+                        {g.net >= 0 ? "+" : "-"}₹{Math.abs(g.net).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         {records.length > 0 && (
           <Card>

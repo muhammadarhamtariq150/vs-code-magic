@@ -225,10 +225,10 @@ serve(async (req) => {
 
       if (betError) throw betError;
 
-      // Log transaction
+      // Log transaction (include duration variant for accurate financial reporting)
       await supabase.from("game_transactions").insert({
         user_id: user.id,
-        game_name: "Wingo",
+        game_name: `Wingo ${round.duration_type}`,
         bet_amount: amount,
         result: "pending",
         win_amount: 0,
@@ -656,7 +656,7 @@ async function completeRound(supabase: any, roundId: string, durationType: strin
           .from("game_transactions")
           .insert({
             user_id: bet.user_id,
-            game_name: "Wingo",
+            game_name: `Wingo ${durationType}`,
             bet_amount: bet.amount,
             result: "win",
             win_amount: payout,
