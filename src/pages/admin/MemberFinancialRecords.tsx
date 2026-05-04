@@ -107,13 +107,23 @@ const MemberFinancialRecords = () => {
         .lte("created_at", endDate.toISOString())
         .order("created_at", { ascending: false });
 
-      // Get Wingo bets joined with rounds for exact duration breakdown (works for historical data too)
-      const { data: wingoBets } = await supabase
+      // Get Wingo bets for exact duration breakdown (works for historical data too)
+      const { data: wingoBetsRaw } = await supabase
         .from("wingo_bets")
-        .select("amount, payout, is_winner, created_at, wingo_rounds!inner(duration_type)")
+        .select("amount, payout, is_winner, round_id, created_at")
         .eq("user_id", userId)
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString());
+
+      const roundIds = Array.from(new Set((wingoBetsRaw || []).map((b) => b.round_id)));
+      let roundsMap = new Map<string, string>();
+      if (roundIds.length > 0) {
+        const { data: roundsData } = await supabase
+          .from("wingo_rounds")
+          .select("id, duration_type")
+          .in("id", roundIds);
+        roundsData?.forEach((r) => roundsMap.set(r.id, r.duration_type));
+      }
 
       // Combine and sort all records
       const allRecords: FinancialRecord[] = [];
