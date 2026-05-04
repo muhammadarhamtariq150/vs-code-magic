@@ -266,6 +266,47 @@ const MemberFinancialRecords = () => {
           </CardContent>
         </Card>
 
+        {gameSummary.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Game-wise P&L for {memberUsername}</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Wingo is split by duration (1 / 3 / 5 / 10 min) so you can see exactly where the loss happened.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Game</TableHead>
+                    <TableHead className="text-right">Rounds</TableHead>
+                    <TableHead className="text-right">Total Bet</TableHead>
+                    <TableHead className="text-right">Total Win</TableHead>
+                    <TableHead className="text-right">Net (Win - Loss)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {gameSummary.map((g) => (
+                    <TableRow key={g.game_name}>
+                      <TableCell className="font-medium capitalize">{g.game_name}</TableCell>
+                      <TableCell className="text-right">{g.rounds}</TableCell>
+                      <TableCell className="text-right">₹{g.total_bet.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">₹{g.total_win.toLocaleString()}</TableCell>
+                      <TableCell
+                        className={`text-right font-semibold ${
+                          g.net >= 0 ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
+                        {g.net >= 0 ? "+" : "-"}₹{Math.abs(g.net).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
         {records.length > 0 && (
           <Card>
             <CardHeader>
