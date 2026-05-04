@@ -28,6 +28,14 @@ interface FinancialRecord {
   created_at: string;
 }
 
+interface GameSummary {
+  game_name: string;
+  total_bet: number;
+  total_win: number;
+  net: number; // win - bet (negative => loss)
+  rounds: number;
+}
+
 const MemberFinancialRecords = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [records, setRecords] = useState<FinancialRecord[]>([]);
