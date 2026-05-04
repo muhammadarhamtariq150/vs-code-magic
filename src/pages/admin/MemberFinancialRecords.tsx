@@ -170,7 +170,27 @@ const MemberFinancialRecords = () => {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
+      // Build per-game summary (bet/win/loss) — Wingo split by 1/3/5/10 min
+      const summaryMap = new Map<string, GameSummary>();
+      transactions?.forEach((t) => {
+        const name = t.game_name || "Unknown";
+        const cur = summaryMap.get(name) || {
+          game_name: name,
+          total_bet: 0,
+          total_win: 0,
+          net: 0,
+          rounds: 0,
+        };
+        cur.total_bet += Number(t.bet_amount) || 0;
+        cur.total_win += Number(t.win_amount) || 0;
+        cur.net = cur.total_win - cur.total_bet;
+        cur.rounds += 1;
+        summaryMap.set(name, cur);
+      });
+      const summary = Array.from(summaryMap.values()).sort((a, b) => a.net - b.net);
+
       setRecords(allRecords);
+      setGameSummary(summary);
     } catch (error: any) {
       toast({
         title: "Search failed",
