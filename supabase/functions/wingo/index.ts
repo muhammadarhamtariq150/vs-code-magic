@@ -656,7 +656,7 @@ async function completeRound(supabase: any, roundId: string, durationType: strin
           .from("game_transactions")
           .insert({
             user_id: bet.user_id,
-            game_name: "Wingo",
+            game_name: `Wingo ${durationType}`,
             bet_amount: bet.amount,
             result: "win",
             win_amount: payout,
