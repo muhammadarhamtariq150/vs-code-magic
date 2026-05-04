@@ -188,12 +188,14 @@ const MemberFinancialRecords = () => {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
-      // Build per-game summary (bet/win/loss) — Wingo split by 1/3/5/10 min
+      // Build per-game summary (bet/win/loss) — Wingo split by 1/2/3/5 min via wingo_bets
       const summaryMap = new Map<string, GameSummary>();
       transactions?.forEach((t) => {
-        const name = t.game_name || "Unknown";
-        const cur = summaryMap.get(name) || {
-          game_name: name,
+        const rawName = t.game_name || "Unknown";
+        // Skip any Wingo entries — we rebuild Wingo from wingo_bets below for accurate duration split
+        if (rawName.toLowerCase().startsWith("wingo")) return;
+        const cur = summaryMap.get(rawName) || {
+          game_name: rawName,
           total_bet: 0,
           total_win: 0,
           net: 0,
@@ -203,8 +205,27 @@ const MemberFinancialRecords = () => {
         cur.total_win += Number(t.win_amount) || 0;
         cur.net = cur.total_win - cur.total_bet;
         cur.rounds += 1;
+        summaryMap.set(rawName, cur);
+      });
+
+      // Add Wingo grouped by duration
+      wingoBetsRaw?.forEach((b) => {
+        const dur = roundsMap.get(b.round_id) || "unknown";
+        const name = `Wingo ${dur}`;
+        const cur = summaryMap.get(name) || {
+          game_name: name,
+          total_bet: 0,
+          total_win: 0,
+          net: 0,
+          rounds: 0,
+        };
+        cur.total_bet += Number(b.amount) || 0;
+        cur.total_win += Number(b.payout) || 0;
+        cur.net = cur.total_win - cur.total_bet;
+        cur.rounds += 1;
         summaryMap.set(name, cur);
       });
+
       const summary = Array.from(summaryMap.values()).sort((a, b) => a.net - b.net);
 
       setRecords(allRecords);
