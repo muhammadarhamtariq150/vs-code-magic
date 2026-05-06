@@ -316,23 +316,60 @@ const MemberDetails = () => {
               >
                 By Upper Level Agent
               </Button>
-            </div>
-
-            <div className="flex gap-2">
-              <Input
-                placeholder={
-                  searchType === "username"
-                    ? "Enter username or game ID..."
-                    : "Enter agent username..."
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && searchMembers()}
-              />
-              <Button onClick={searchMembers} disabled={loading}>
-                {loading ? "Searching..." : "Search"}
+              <Button
+                variant={searchType === "date" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSearchType("date")}
+              >
+                By Registration Date
               </Button>
             </div>
+
+            {searchType === "date" ? (
+              <div className="flex flex-wrap gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateFrom ? format(dateFrom, "PPP") : "From date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateTo ? format(dateTo, "PPP") : "To date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+                <Button onClick={searchMembers} disabled={loading}>
+                  {loading ? "Searching..." : "Search"}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Input
+                  placeholder={
+                    searchType === "username"
+                      ? "Enter username or game ID..."
+                      : "Enter agent username..."
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && searchMembers()}
+                />
+                <Button onClick={searchMembers} disabled={loading}>
+                  {loading ? "Searching..." : "Search"}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
