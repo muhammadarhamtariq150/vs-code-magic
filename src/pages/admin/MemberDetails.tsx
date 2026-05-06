@@ -63,7 +63,9 @@ interface WalletInfo {
 
 const MemberDetails = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState<"username" | "agent">("username");
+  const [searchType, setSearchType] = useState<"username" | "agent" | "date">("username");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [selectedMember, setSelectedMember] = useState<MemberProfile | null>(null);
   const [bankDetails, setBankDetails] = useState<BankDetail[]>([]);
