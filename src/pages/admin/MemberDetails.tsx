@@ -67,6 +67,7 @@ const MemberDetails = () => {
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
   const [members, setMembers] = useState<MemberProfile[]>([]);
+  const [emails, setEmails] = useState<Record<string, string>>({});
   const [selectedMember, setSelectedMember] = useState<MemberProfile | null>(null);
   const [bankDetails, setBankDetails] = useState<BankDetail[]>([]);
   const [usdtWallets, setUsdtWallets] = useState<UsdtWallet[]>([]);
