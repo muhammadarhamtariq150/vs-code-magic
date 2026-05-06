@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.wingo]
 verify_jwt = false
+
+[functions.resolve-username]
+verify_jwt = false
