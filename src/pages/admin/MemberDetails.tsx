@@ -82,7 +82,8 @@ const MemberDetails = () => {
   const [newSecurityPassword, setNewSecurityPassword] = useState("");
 
   const searchMembers = async () => {
-    if (!searchQuery.trim()) return;
+    if (searchType !== "date" && !searchQuery.trim()) return;
+    if (searchType === "date" && !dateFrom && !dateTo) return;
 
     setLoading(true);
     try {
@@ -90,8 +91,7 @@ const MemberDetails = () => {
 
       if (searchType === "username") {
         query = query.ilike("username", `%${searchQuery}%`);
-      } else {
-        // Search for downlines of the agent
+      } else if (searchType === "agent") {
         const { data: agent } = await supabase
           .from("profiles")
           .select("user_id")
@@ -101,6 +101,14 @@ const MemberDetails = () => {
         if (agent) {
           query = query.eq("agent_id", agent.user_id);
         }
+      } else if (searchType === "date") {
+        if (dateFrom) query = query.gte("created_at", dateFrom.toISOString());
+        if (dateTo) {
+          const end = new Date(dateTo);
+          end.setHours(23, 59, 59, 999);
+          query = query.lte("created_at", end.toISOString());
+        }
+        query = query.order("created_at", { ascending: false });
       }
 
       const { data, error } = await query;
