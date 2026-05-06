@@ -577,14 +577,16 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 </div>
               )}
 
-              {/* Email */}
+              {/* Email or Username */}
               <div className="relative">
                 <input
-                  type="email"
-                  placeholder="Please enter Email"
+                  type={activeTab === "login" ? "text" : "email"}
+                  placeholder={activeTab === "login" ? "Username or Email" : "Please enter Email"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
                 />
               </div>
