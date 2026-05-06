@@ -400,6 +400,7 @@ const MemberDetails = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Username</TableHead>
+                    <TableHead>Login Email</TableHead>
                     <TableHead>Phone</TableHead>
                     <TableHead>Registered</TableHead>
                     <TableHead>Status</TableHead>
@@ -410,6 +411,7 @@ const MemberDetails = () => {
                   {members.map((member) => (
                     <TableRow key={member.id}>
                       <TableCell className="font-medium">{member.username}</TableCell>
+                      <TableCell className="text-sm">{emails[member.user_id] || <span className="text-muted-foreground">—</span>}</TableCell>
                       <TableCell>{member.phone || "Not set"}</TableCell>
                       <TableCell>
                         {format(new Date(member.created_at), "MMM dd, yyyy")}
