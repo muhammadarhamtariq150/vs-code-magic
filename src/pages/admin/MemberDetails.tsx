@@ -23,8 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, User, Ban, Shield, Wallet, Trash2, Plus, Edit } from "lucide-react";
+import { Search, User, Ban, Shield, Wallet, Trash2, Plus, Edit, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface MemberProfile {
   id: string;
@@ -60,7 +63,9 @@ interface WalletInfo {
 
 const MemberDetails = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState<"username" | "agent">("username");
+  const [searchType, setSearchType] = useState<"username" | "agent" | "date">("username");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [selectedMember, setSelectedMember] = useState<MemberProfile | null>(null);
   const [bankDetails, setBankDetails] = useState<BankDetail[]>([]);
@@ -77,7 +82,8 @@ const MemberDetails = () => {
   const [newSecurityPassword, setNewSecurityPassword] = useState("");
 
   const searchMembers = async () => {
-    if (!searchQuery.trim()) return;
+    if (searchType !== "date" && !searchQuery.trim()) return;
+    if (searchType === "date" && !dateFrom && !dateTo) return;
 
     setLoading(true);
     try {
@@ -85,8 +91,7 @@ const MemberDetails = () => {
 
       if (searchType === "username") {
         query = query.ilike("username", `%${searchQuery}%`);
-      } else {
-        // Search for downlines of the agent
+      } else if (searchType === "agent") {
         const { data: agent } = await supabase
           .from("profiles")
           .select("user_id")
@@ -96,6 +101,14 @@ const MemberDetails = () => {
         if (agent) {
           query = query.eq("agent_id", agent.user_id);
         }
+      } else if (searchType === "date") {
+        if (dateFrom) query = query.gte("created_at", dateFrom.toISOString());
+        if (dateTo) {
+          const end = new Date(dateTo);
+          end.setHours(23, 59, 59, 999);
+          query = query.lte("created_at", end.toISOString());
+        }
+        query = query.order("created_at", { ascending: false });
       }
 
       const { data, error } = await query;
@@ -303,23 +316,60 @@ const MemberDetails = () => {
               >
                 By Upper Level Agent
               </Button>
-            </div>
-
-            <div className="flex gap-2">
-              <Input
-                placeholder={
-                  searchType === "username"
-                    ? "Enter username or game ID..."
-                    : "Enter agent username..."
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && searchMembers()}
-              />
-              <Button onClick={searchMembers} disabled={loading}>
-                {loading ? "Searching..." : "Search"}
+              <Button
+                variant={searchType === "date" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSearchType("date")}
+              >
+                By Registration Date
               </Button>
             </div>
+
+            {searchType === "date" ? (
+              <div className="flex flex-wrap gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateFrom ? format(dateFrom, "PPP") : "From date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateTo ? format(dateTo, "PPP") : "To date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+                <Button onClick={searchMembers} disabled={loading}>
+                  {loading ? "Searching..." : "Search"}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Input
+                  placeholder={
+                    searchType === "username"
+                      ? "Enter username or game ID..."
+                      : "Enter agent username..."
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && searchMembers()}
+                />
+                <Button onClick={searchMembers} disabled={loading}>
+                  {loading ? "Searching..." : "Search"}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
