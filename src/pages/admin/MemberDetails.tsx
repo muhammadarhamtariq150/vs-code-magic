@@ -23,8 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, User, Ban, Shield, Wallet, Trash2, Plus, Edit } from "lucide-react";
+import { Search, User, Ban, Shield, Wallet, Trash2, Plus, Edit, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface MemberProfile {
   id: string;
