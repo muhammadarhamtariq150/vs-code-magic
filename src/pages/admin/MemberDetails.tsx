@@ -115,7 +115,23 @@ const MemberDetails = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setMembers(data || []);
+      const list = data || [];
+      setMembers(list);
+
+      // Fetch emails for these users
+      if (list.length > 0) {
+        try {
+          const { data: emailData } = await supabase.functions.invoke("get-user-emails", {
+            body: { user_ids: list.map((m: any) => m.user_id) },
+          });
+          setEmails(emailData?.emails || {});
+        } catch (e) {
+          console.error("Failed to load emails", e);
+          setEmails({});
+        }
+      } else {
+        setEmails({});
+      }
     } catch (error: any) {
       toast({
         title: "Search failed",
