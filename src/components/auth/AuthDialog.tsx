@@ -102,24 +102,34 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       return;
     }
 
-    if (!validateEmail(email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
     setLoading(true);
     try {
+      const identifier = email.trim();
+      let loginEmail = identifier.toLowerCase();
+
+      // If it's not an email, treat as username and resolve to email
+      if (!validateEmail(identifier)) {
+        const { data, error: resolveErr } = await supabase.functions.invoke("resolve-username", {
+          body: { username: identifier },
+        });
+        if (resolveErr || !data?.email) {
+          toast.error("Invalid username or password");
+          setLoading(false);
+          return;
+        }
+        loginEmail = data.email;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: loginEmail,
         password,
       });
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password");
+          toast.error("Invalid username/email or password");
         } else if (error.message.includes("Email not confirmed")) {
           toast.error("Please verify your email first");
-          // Send new OTP for verification
           await sendCustomOTP();
           setStep("verify");
         } else {
