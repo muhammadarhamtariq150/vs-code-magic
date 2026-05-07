@@ -91,6 +91,7 @@ const App = () => (
           <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
           <Route path="/admin/games/wingo" element={<WingoControl />} />
+          <Route path="/admin/games/aviator" element={<AviatorControl />} />
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />
