@@ -46,6 +46,7 @@ import WagerAdjustment from "./pages/admin/WagerAdjustment";
 import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
 import PaymentSettings from "./pages/admin/PaymentSettings";
 import WingoControl from "./pages/admin/WingoControl";
+import AviatorControl from "./pages/admin/AviatorControl";
 
 const queryClient = new QueryClient();
 
