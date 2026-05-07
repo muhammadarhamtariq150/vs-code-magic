@@ -54,12 +54,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     try {
       const { data, error } = await supabase
-        .from("referral_codes")
-        .select("user_id")
-        .eq("code", code.toUpperCase())
-        .single();
+        .rpc("lookup_referral_code", { _code: code.toUpperCase() });
 
-      if (error || !data) {
+      if (error || !data || data.length === 0) {
         setPromoCodeValid(false);
       } else {
         setPromoCodeValid(true);
