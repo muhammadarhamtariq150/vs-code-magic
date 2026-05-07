@@ -68,7 +68,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { isAdmin, loading } = useAdmin();
   const { user, signOut } = useAuth();
   const location = useLocation();
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["Membership", "Finance"]);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["Membership", "Finance", "Game Control"]);
 
   const toggleMenu = (title: string) => {
     setExpandedMenus((prev) =>
