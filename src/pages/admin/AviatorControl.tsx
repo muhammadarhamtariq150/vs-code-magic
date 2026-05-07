@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Plane, Trash2, Plus } from "lucide-react";
+import { Plane, Trash2, Plus, RefreshCw, Wifi, WifiOff } from "lucide-react";
 
 interface ControlEntry {
   id: string;
@@ -23,6 +23,11 @@ const AviatorControl = () => {
   const [history, setHistory] = useState<ControlEntry[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
+  const retryRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = async () => {
     const { data: pending } = await supabase
@@ -42,13 +47,67 @@ const AviatorControl = () => {
     setHistory((consumed as any) || []);
   };
 
+  const manualRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+    toast.success("Queue refreshed");
+  };
+
   useEffect(() => {
     load();
-    const ch = supabase
-      .channel("aviator-controls")
-      .on("postgres_changes", { event: "*", schema: "public", table: "aviator_admin_controls" }, load)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const startPolling = () => {
+      if (pollTimerRef.current) return;
+      pollTimerRef.current = setInterval(load, 5000);
+    };
+
+    const stopPolling = () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
+
+    const connect = () => {
+      setRealtimeStatus("connecting");
+      channel = supabase
+        .channel(`aviator-controls-${Date.now()}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "aviator_admin_controls" },
+          load
+        )
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            setRealtimeStatus("live");
+            retryRef.current = 0;
+            stopPolling();
+          } else if (
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT" ||
+            status === "CLOSED"
+          ) {
+            setRealtimeStatus("offline");
+            startPolling();
+            // Exponential backoff retry, capped at 30s
+            const delay = Math.min(1000 * 2 ** retryRef.current, 30_000);
+            retryRef.current += 1;
+            if (channel) supabase.removeChannel(channel);
+            retryTimerRef.current = setTimeout(connect, delay);
+          }
+        });
+    };
+
+    connect();
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+      stopPolling();
+    };
   }, []);
 
   const addPoints = async () => {
@@ -105,12 +164,39 @@ const AviatorControl = () => {
       <div className="space-y-6 max-w-4xl">
         <div className="flex items-center gap-3">
           <Plane className="w-7 h-7 text-red-500" />
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">Aviator Control</h1>
             <p className="text-sm text-muted-foreground">
               Pre-set the next crash points. The plane will fly until each value, in order.
             </p>
           </div>
+          <span
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${
+              realtimeStatus === "live"
+                ? "bg-green-500/10 text-green-500 border-green-500/30"
+                : realtimeStatus === "connecting"
+                ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/30"
+                : "bg-red-500/10 text-red-500 border-red-500/30"
+            }`}
+            title={
+              realtimeStatus === "live"
+                ? "Real-time connected"
+                : realtimeStatus === "connecting"
+                ? "Connecting…"
+                : "Real-time offline — polling every 5s"
+            }
+          >
+            {realtimeStatus === "live" ? (
+              <Wifi className="w-3 h-3" />
+            ) : (
+              <WifiOff className="w-3 h-3" />
+            )}
+            {realtimeStatus === "live" ? "Live" : realtimeStatus === "connecting" ? "Connecting" : "Polling"}
+          </span>
+          <Button variant="outline" size="sm" onClick={manualRefresh} disabled={refreshing} className="gap-2">
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
         </div>
 
         <Card className="p-5 bg-gradient-to-br from-primary/10 to-transparent border-primary/30">
