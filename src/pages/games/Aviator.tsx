@@ -9,6 +9,7 @@ import WalletDisplay from "@/components/games/WalletDisplay";
 import AviatorGraph from "@/components/games/aviator/AviatorGraph";
 import AviatorHistory from "@/components/games/aviator/AviatorHistory";
 import AviatorBetPanel from "@/components/games/aviator/AviatorBetPanel";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Aviator = () => {
