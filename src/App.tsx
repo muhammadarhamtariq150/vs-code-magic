@@ -46,6 +46,7 @@ import WagerAdjustment from "./pages/admin/WagerAdjustment";
 import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
 import PaymentSettings from "./pages/admin/PaymentSettings";
 import WingoControl from "./pages/admin/WingoControl";
+import AviatorControl from "./pages/admin/AviatorControl";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const App = () => (
           <Route path="/admin/finance/wager" element={<WagerAdjustment />} />
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
           <Route path="/admin/games/wingo" element={<WingoControl />} />
+          <Route path="/admin/games/aviator" element={<AviatorControl />} />
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />

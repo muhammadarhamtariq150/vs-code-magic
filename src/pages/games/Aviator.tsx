@@ -9,6 +9,7 @@ import WalletDisplay from "@/components/games/WalletDisplay";
 import AviatorGraph from "@/components/games/aviator/AviatorGraph";
 import AviatorHistory from "@/components/games/aviator/AviatorHistory";
 import AviatorBetPanel from "@/components/games/aviator/AviatorBetPanel";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Aviator = () => {
@@ -51,8 +52,31 @@ const Aviator = () => {
     setMultiplier(1.0);
     multiplierRef.current = 1.0;
 
-    // Generate crash point
-    crashPointRef.current = 1 + Math.random() * Math.random() * 15;
+    // Check admin queue first
+    let chosen: number | null = null;
+    try {
+      const { data: next } = await supabase
+        .from("aviator_admin_controls")
+        .select("id, crash_point")
+        .eq("status", "pending")
+        .order("position", { ascending: true })
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (next) {
+        const { data: claimed } = await supabase
+          .from("aviator_admin_controls")
+          .update({ status: "consumed", consumed_at: new Date().toISOString() })
+          .eq("id", (next as any).id)
+          .eq("status", "pending")
+          .select("crash_point")
+          .maybeSingle();
+        if (claimed) chosen = Number((claimed as any).crash_point);
+      }
+    } catch (e) {
+      console.error("aviator admin queue", e);
+    }
+    crashPointRef.current = chosen ?? (1 + Math.random() * Math.random() * 15);
 
     // Brief waiting period
     await new Promise((r) => setTimeout(r, 2500));
