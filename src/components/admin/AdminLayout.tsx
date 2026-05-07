@@ -59,6 +59,7 @@ const menuItems = [
     icon: Gamepad2,
     children: [
       { title: "Wingo Control", path: "/admin/games/wingo", icon: Target },
+      { title: "Aviator Control", path: "/admin/games/aviator", icon: Target },
     ],
   },
 ];
