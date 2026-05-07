@@ -165,19 +165,33 @@ const AviatorControl = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>#</TableHead>
+                  <TableHead>Position</TableHead>
                   <TableHead>Crash Point</TableHead>
-                  <TableHead>Added</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Added At</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {queue.map((q, i) => (
                   <TableRow key={q.id}>
-                    <TableCell className="font-mono">{i + 1}</TableCell>
+                    <TableCell className="font-mono">
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${i === 0 ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                        #{i + 1}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <span className={`font-bold ${q.crash_point >= 2 ? "text-green-500" : "text-red-500"}`}>
                         {Number(q.crash_point).toFixed(2)}x
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`text-xs px-2 py-1 rounded-full border ${
+                        i === 0
+                          ? "bg-primary/10 text-primary border-primary/30"
+                          : "bg-yellow-500/10 text-yellow-600 border-yellow-500/30"
+                      }`}>
+                        {i === 0 ? "Next Up" : "Queued"}
                       </span>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
