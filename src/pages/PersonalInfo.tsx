@@ -20,7 +20,7 @@ interface Profile {
   phone: string | null;
   avatar_url: string | null;
   created_at: string;
-  security_password_hash: string | null;
+  has_security_password: boolean | null;
 }
 
 const PersonalInfo = () => {
@@ -47,7 +47,7 @@ const PersonalInfo = () => {
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("username, phone, avatar_url, created_at, security_password_hash")
+          .select("username, phone, avatar_url, created_at, has_security_password")
           .eq("user_id", user.id)
           .single();
 
@@ -117,12 +117,9 @@ const PersonalInfo = () => {
           toast({ title: "Error", description: "Security password must be at least 4 characters", variant: "destructive" });
           return;
         }
-        const { error } = await supabase
-          .from("profiles")
-          .update({ security_password_hash: newPassword })
-          .eq("user_id", user.id);
+        const { error } = await supabase.rpc("set_security_password", { _new_password: newPassword });
         if (error) throw error;
-        setProfile(prev => prev ? { ...prev, security_password_hash: newPassword } : null);
+        setProfile(prev => prev ? { ...prev, has_security_password: true } : null);
         toast({ title: "Success", description: "Security password updated successfully" });
       }
       setEditField(null);
@@ -227,8 +224,8 @@ const PersonalInfo = () => {
         
         <InfoRow 
           label="Security Password" 
-          value={profile?.security_password_hash ? "••••••" : "Unset"} 
-          isSet={!!profile?.security_password_hash}
+          value={profile?.has_security_password ? "••••••" : "Unset"} 
+          isSet={!!profile?.has_security_password}
           onClick={() => handleOpenEdit("securityPassword", "")}
         />
       </div>
@@ -241,7 +238,7 @@ const PersonalInfo = () => {
               {editField === "username" && "Edit Username"}
               {editField === "phone" && "Edit Mobile Number"}
               {editField === "loginPassword" && "Change Login Password"}
-              {editField === "securityPassword" && (profile?.security_password_hash ? "Change Security Password" : "Set Security Password")}
+              {editField === "securityPassword" && (profile?.has_security_password ? "Change Security Password" : "Set Security Password")}
             </DialogTitle>
           </DialogHeader>
           

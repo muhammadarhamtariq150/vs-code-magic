@@ -15,16 +15,66 @@ interface VerificationEmailRequest {
   otp_code: string;
 }
 
+// Per-key rate limiter (1 minute window, max 2 sends)
+const rateBuckets = new Map<string, number[]>();
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX = 2;
+
+const isRateLimited = (key: string): boolean => {
+  const now = Date.now();
+  const arr = (rateBuckets.get(key) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  if (arr.length >= RATE_MAX) {
+    rateBuckets.set(key, arr);
+    return true;
+  }
+  arr.push(now);
+  rateBuckets.set(key, arr);
+  return false;
+};
+
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405, headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  }
 
   try {
-    const { email, username, otp_code }: VerificationEmailRequest = await req.json();
+    const body: VerificationEmailRequest = await req.json();
+    const email = String(body.email || "").trim().toLowerCase();
+    const username = String(body.username || "").trim().slice(0, 60);
+    const otp_code = String(body.otp_code || "").trim();
 
-    console.log(`Sending verification email to ${email} with code ${otp_code}`);
+    // Validate inputs
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    if (!/^\d{4,8}$/.test(otp_code)) {
+      return new Response(JSON.stringify({ error: "Invalid OTP code" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    if (!username || username.length < 1) {
+      return new Response(JSON.stringify({ error: "Invalid username" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Rate limit by IP and by email
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+               req.headers.get("cf-connecting-ip") || "unknown";
+    if (isRateLimited(`ip:${ip}`) || isRateLimited(`email:${email}`)) {
+      return new Response(JSON.stringify({ error: "Too many requests" }), {
+        status: 429, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    console.log(`Sending verification email to ${email}`);
 
     const { data, error } = await resend.emails.send({
       from: "VS-Code-Magic <onboarding@resend.dev>",

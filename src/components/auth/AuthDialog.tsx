@@ -54,12 +54,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     try {
       const { data, error } = await supabase
-        .from("referral_codes")
-        .select("user_id")
-        .eq("code", code.toUpperCase())
-        .single();
+        .rpc("lookup_referral_code", { _code: code.toUpperCase() });
 
-      if (error || !data) {
+      if (error || !data || data.length === 0) {
         setPromoCodeValid(false);
       } else {
         setPromoCodeValid(true);
@@ -210,13 +207,10 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       let agentId: string | null = null;
       if (promoCode.trim() && promoCodeValid) {
         const { data: codeData } = await supabase
-          .from("referral_codes")
-          .select("user_id")
-          .eq("code", promoCode.toUpperCase())
-          .single();
-        
-        if (codeData) {
-          agentId = codeData.user_id;
+          .rpc("lookup_referral_code", { _code: promoCode.toUpperCase() });
+
+        if (codeData && codeData.length > 0) {
+          agentId = codeData[0].user_id;
         }
       }
 

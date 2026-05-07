@@ -261,6 +261,7 @@ export type Database = {
           banned_at: string | null
           banned_by: string | null
           created_at: string
+          has_security_password: boolean | null
           id: string
           is_banned: boolean
           phone: string | null
@@ -276,6 +277,7 @@ export type Database = {
           banned_at?: string | null
           banned_by?: string | null
           created_at?: string
+          has_security_password?: boolean | null
           id?: string
           is_banned?: boolean
           phone?: string | null
@@ -291,6 +293,7 @@ export type Database = {
           banned_at?: string | null
           banned_by?: string | null
           created_at?: string
+          has_security_password?: boolean | null
           id?: string
           is_banned?: boolean
           phone?: string | null
@@ -659,6 +662,21 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      lookup_referral_code: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          user_id: string
+        }[]
+      }
+      set_security_password: {
+        Args: { _new_password: string }
+        Returns: undefined
+      }
+      verify_security_password: {
+        Args: { _password: string }
         Returns: boolean
       }
     }
