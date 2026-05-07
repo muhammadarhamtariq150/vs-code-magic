@@ -23,6 +23,11 @@ const AviatorControl = () => {
   const [history, setHistory] = useState<ControlEntry[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
+  const retryRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = async () => {
     const { data: pending } = await supabase
@@ -42,13 +47,67 @@ const AviatorControl = () => {
     setHistory((consumed as any) || []);
   };
 
+  const manualRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+    toast.success("Queue refreshed");
+  };
+
   useEffect(() => {
     load();
-    const ch = supabase
-      .channel("aviator-controls")
-      .on("postgres_changes", { event: "*", schema: "public", table: "aviator_admin_controls" }, load)
-      .subscribe();
-    return () => { supabase.removeChannel(ch); };
+
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const startPolling = () => {
+      if (pollTimerRef.current) return;
+      pollTimerRef.current = setInterval(load, 5000);
+    };
+
+    const stopPolling = () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
+
+    const connect = () => {
+      setRealtimeStatus("connecting");
+      channel = supabase
+        .channel(`aviator-controls-${Date.now()}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "aviator_admin_controls" },
+          load
+        )
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            setRealtimeStatus("live");
+            retryRef.current = 0;
+            stopPolling();
+          } else if (
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT" ||
+            status === "CLOSED"
+          ) {
+            setRealtimeStatus("offline");
+            startPolling();
+            // Exponential backoff retry, capped at 30s
+            const delay = Math.min(1000 * 2 ** retryRef.current, 30_000);
+            retryRef.current += 1;
+            if (channel) supabase.removeChannel(channel);
+            retryTimerRef.current = setTimeout(connect, delay);
+          }
+        });
+    };
+
+    connect();
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+      stopPolling();
+    };
   }, []);
 
   const addPoints = async () => {
