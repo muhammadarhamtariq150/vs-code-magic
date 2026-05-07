@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      aviator_admin_controls: {
+        Row: {
+          consumed_at: string | null
+          crash_point: number
+          created_at: string
+          id: string
+          position: number
+          set_by: string
+          status: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          crash_point: number
+          created_at?: string
+          id?: string
+          position?: number
+          set_by: string
+          status?: string
+        }
+        Update: {
+          consumed_at?: string | null
+          crash_point?: number
+          created_at?: string
+          id?: string
+          position?: number
+          set_by?: string
+          status?: string
+        }
+        Relationships: []
+      }
       bank_details: {
         Row: {
           account_holder: string
