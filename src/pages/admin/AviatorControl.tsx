@@ -164,12 +164,39 @@ const AviatorControl = () => {
       <div className="space-y-6 max-w-4xl">
         <div className="flex items-center gap-3">
           <Plane className="w-7 h-7 text-red-500" />
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold">Aviator Control</h1>
             <p className="text-sm text-muted-foreground">
               Pre-set the next crash points. The plane will fly until each value, in order.
             </p>
           </div>
+          <span
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${
+              realtimeStatus === "live"
+                ? "bg-green-500/10 text-green-500 border-green-500/30"
+                : realtimeStatus === "connecting"
+                ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/30"
+                : "bg-red-500/10 text-red-500 border-red-500/30"
+            }`}
+            title={
+              realtimeStatus === "live"
+                ? "Real-time connected"
+                : realtimeStatus === "connecting"
+                ? "Connecting…"
+                : "Real-time offline — polling every 5s"
+            }
+          >
+            {realtimeStatus === "live" ? (
+              <Wifi className="w-3 h-3" />
+            ) : (
+              <WifiOff className="w-3 h-3" />
+            )}
+            {realtimeStatus === "live" ? "Live" : realtimeStatus === "connecting" ? "Connecting" : "Polling"}
+          </span>
+          <Button variant="outline" size="sm" onClick={manualRefresh} disabled={refreshing} className="gap-2">
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
         </div>
 
         <Card className="p-5 bg-gradient-to-br from-primary/10 to-transparent border-primary/30">
