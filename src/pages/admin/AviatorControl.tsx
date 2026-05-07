@@ -113,6 +113,23 @@ const AviatorControl = () => {
           </div>
         </div>
 
+        <Card className="p-5 bg-gradient-to-br from-primary/10 to-transparent border-primary/30">
+          <h2 className="font-semibold mb-3 text-sm text-muted-foreground uppercase tracking-wide">Next Up</h2>
+          {queue.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No queued crash point — next round will be random.</p>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className={`text-5xl font-black ${queue[0].crash_point >= 2 ? "text-green-500" : "text-red-500"}`}>
+                {Number(queue[0].crash_point).toFixed(2)}x
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <div>Position <span className="font-bold text-foreground">#1</span> of {queue.length}</div>
+                <div className="text-xs">Will be used on the next round</div>
+              </div>
+            </div>
+          )}
+        </Card>
+
         <Card className="p-5 space-y-4">
           <h2 className="font-semibold">Add crash points</h2>
           <div className="flex gap-2">
