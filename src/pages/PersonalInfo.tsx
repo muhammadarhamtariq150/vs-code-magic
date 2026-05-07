@@ -224,8 +224,8 @@ const PersonalInfo = () => {
         
         <InfoRow 
           label="Security Password" 
-          value={profile?.security_password_hash ? "••••••" : "Unset"} 
-          isSet={!!profile?.security_password_hash}
+          value={profile?.has_security_password ? "••••••" : "Unset"} 
+          isSet={!!profile?.has_security_password}
           onClick={() => handleOpenEdit("securityPassword", "")}
         />
       </div>
@@ -238,7 +238,7 @@ const PersonalInfo = () => {
               {editField === "username" && "Edit Username"}
               {editField === "phone" && "Edit Mobile Number"}
               {editField === "loginPassword" && "Change Login Password"}
-              {editField === "securityPassword" && (profile?.security_password_hash ? "Change Security Password" : "Set Security Password")}
+              {editField === "securityPassword" && (profile?.has_security_password ? "Change Security Password" : "Set Security Password")}
             </DialogTitle>
           </DialogHeader>
           
