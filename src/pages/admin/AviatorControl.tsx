@@ -15,6 +15,8 @@ interface ControlEntry {
   status: string;
   position: number;
   created_at: string;
+  consumed_at?: string | null;
+  actual_crash?: number | null;
 }
 
 const AviatorControl = () => {
