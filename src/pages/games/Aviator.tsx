@@ -42,6 +42,7 @@ const Aviator = () => {
   const crashPointRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const multiplierRef = useRef(1.0);
+  const consumedIdRef = useRef<string | null>(null);
 
   // Auto-start rounds
   const startRound = useCallback(async () => {
@@ -54,6 +55,7 @@ const Aviator = () => {
 
     // Check admin queue first
     let chosen: number | null = null;
+    let consumedId: string | null = null;
     try {
       const { data: next } = await supabase
         .from("aviator_admin_controls")
@@ -69,14 +71,18 @@ const Aviator = () => {
           .update({ status: "consumed", consumed_at: new Date().toISOString() })
           .eq("id", (next as any).id)
           .eq("status", "pending")
-          .select("crash_point")
+          .select("id, crash_point")
           .maybeSingle();
-        if (claimed) chosen = Number((claimed as any).crash_point);
+        if (claimed) {
+          chosen = Number((claimed as any).crash_point);
+          consumedId = (claimed as any).id;
+        }
       }
     } catch (e) {
       console.error("aviator admin queue", e);
     }
     crashPointRef.current = chosen ?? (1 + Math.random() * Math.random() * 15);
+    consumedIdRef.current = consumedId;
 
     // Brief waiting period
     await new Promise((r) => setTimeout(r, 2500));
@@ -125,6 +131,19 @@ const Aviator = () => {
     const crashPoint = Number(crashPointRef.current.toFixed(2));
     setHistory((prev) => [crashPoint, ...prev.slice(0, 19)]);
     setRoundId((prev) => prev + 1);
+
+    // Record actual crash on consumed admin entry for verification log
+    if (consumedIdRef.current) {
+      try {
+        await supabase
+          .from("aviator_admin_controls")
+          .update({ actual_crash: crashPoint })
+          .eq("id", consumedIdRef.current);
+      } catch (e) {
+        console.error("record actual_crash", e);
+      }
+      consumedIdRef.current = null;
+    }
 
     // Settle unexited bets
     if (betPlaced1 && !hasCashedOut1) {
