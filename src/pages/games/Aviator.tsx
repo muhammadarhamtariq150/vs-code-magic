@@ -42,6 +42,7 @@ const Aviator = () => {
   const crashPointRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const multiplierRef = useRef(1.0);
+  const consumedIdRef = useRef<string | null>(null);
 
   // Auto-start rounds
   const startRound = useCallback(async () => {
