@@ -199,21 +199,49 @@ const AviatorControl = () => {
           </Button>
         </div>
 
-        <Card className="p-5 bg-gradient-to-br from-primary/10 to-transparent border-primary/30">
-          <h2 className="font-semibold mb-3 text-sm text-muted-foreground uppercase tracking-wide">Next Up</h2>
-          {queue.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No queued crash point — next round will be random.</p>
-          ) : (
-            <div className="flex items-center gap-4">
-              <div className={`text-5xl font-black ${queue[0].crash_point >= 2 ? "text-green-500" : "text-red-500"}`}>
-                {Number(queue[0].crash_point).toFixed(2)}x
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <div>Position <span className="font-bold text-foreground">#1</span> of {queue.length}</div>
-                <div className="text-xs">Will be used on the next round</div>
-              </div>
+        <Card className="p-6 bg-gradient-to-b from-rose-50 to-white border-rose-200">
+          <div className="flex flex-col items-center text-center">
+            <div className="inline-block bg-gradient-to-r from-yellow-300 to-yellow-500 text-black font-bold text-[11px] px-3 py-1 rounded-full shadow mb-2">
+              Premium Predictor
             </div>
-          )}
+            <h2 className="text-2xl font-black text-red-600 flex items-center gap-2">
+              <Plane className="w-5 h-5 -rotate-45" />
+              Next Aviator Crash
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              This is the exact value the plane will crash at on the next round.
+            </p>
+
+            <div
+              className="relative w-56 h-56 rounded-full bg-white flex items-center justify-center mt-5"
+              style={{
+                boxShadow:
+                  "0 0 0 6px #fff, 0 0 30px 10px rgba(239,68,68,0.45), 0 0 80px 20px rgba(239,68,68,0.2)",
+              }}
+            >
+              {queue.length === 0 ? (
+                <div className="text-center px-4">
+                  <div className="text-3xl font-black text-gray-400">--</div>
+                  <div className="text-[11px] text-gray-500 mt-1 max-w-[10rem]">
+                    Queue empty — next round will be random. Add a crash point below.
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <div className={`text-5xl font-black ${queue[0].crash_point >= 2 ? "text-green-600" : "text-red-600"}`}>
+                    {Number(queue[0].crash_point).toFixed(2)}x
+                  </div>
+                  <div className="text-[11px] text-muted-foreground mt-1">
+                    Position #1 of {queue.length}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 w-full bg-green-50 border-l-4 border-green-500 rounded-md px-3 py-2 text-left text-xs text-gray-700">
+              <span className="font-bold">Note:</span> This value is locked — the Aviator game will crash at exactly this multiplier.
+            </div>
+          </div>
         </Card>
 
         <Card className="p-5 space-y-4">
