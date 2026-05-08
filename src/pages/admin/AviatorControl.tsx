@@ -327,24 +327,62 @@ const AviatorControl = () => {
         </Card>
 
         <Card className="p-5">
-          <h2 className="font-semibold mb-3">Recent consumed (last 20)</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Verification Log (last 20 rounds)</h2>
+            {(() => {
+              const verified = history.filter((h) => h.actual_crash != null);
+              const matches = verified.filter(
+                (h) => Math.abs(Number(h.crash_point) - Number(h.actual_crash)) < 0.01
+              ).length;
+              return verified.length > 0 ? (
+                <span className="text-xs text-muted-foreground">{matches}/{verified.length} matched</span>
+              ) : null;
+            })()}
+          </div>
           {history.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4 text-center">No history yet.</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {history.map((h) => (
-                <span
-                  key={h.id}
-                  className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                    h.crash_point >= 2
-                      ? "bg-green-500/10 text-green-500 border-green-500/30"
-                      : "bg-red-500/10 text-red-500 border-red-500/30"
-                  }`}
-                >
-                  {Number(h.crash_point).toFixed(2)}x
-                </span>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Predicted</TableHead>
+                  <TableHead>Actual</TableHead>
+                  <TableHead>Match</TableHead>
+                  <TableHead>Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {history.map((h) => {
+                  const predicted = Number(h.crash_point);
+                  const actual = h.actual_crash != null ? Number(h.actual_crash) : null;
+                  const matched = actual != null && Math.abs(predicted - actual) < 0.01;
+                  return (
+                    <TableRow key={h.id}>
+                      <TableCell><span className="font-bold">{predicted.toFixed(2)}x</span></TableCell>
+                      <TableCell>
+                        {actual == null ? (
+                          <span className="text-xs text-muted-foreground">pending…</span>
+                        ) : (
+                          <span className={`font-bold ${matched ? "text-green-500" : "text-red-500"}`}>{actual.toFixed(2)}x</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {actual == null ? (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">—</span>
+                        ) : matched ? (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 border border-green-500/30 font-semibold">✓ MATCH</span>
+                        ) : (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-600 border border-red-500/30 font-semibold">✗ MISMATCH</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {h.consumed_at ? new Date(h.consumed_at).toLocaleTimeString() : "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           )}
         </Card>
       </div>
