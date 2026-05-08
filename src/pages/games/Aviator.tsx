@@ -132,6 +132,19 @@ const Aviator = () => {
     setHistory((prev) => [crashPoint, ...prev.slice(0, 19)]);
     setRoundId((prev) => prev + 1);
 
+    // Record actual crash on consumed admin entry for verification log
+    if (consumedIdRef.current) {
+      try {
+        await supabase
+          .from("aviator_admin_controls")
+          .update({ actual_crash: crashPoint })
+          .eq("id", consumedIdRef.current);
+      } catch (e) {
+        console.error("record actual_crash", e);
+      }
+      consumedIdRef.current = null;
+    }
+
     // Settle unexited bets
     if (betPlaced1 && !hasCashedOut1) {
       await recordTransaction("Aviator", betAmount1, 0, "loss");
