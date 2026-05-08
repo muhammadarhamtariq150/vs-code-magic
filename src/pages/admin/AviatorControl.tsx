@@ -87,15 +87,16 @@ const AviatorControl = () => {
             stopPolling();
           } else if (
             status === "CHANNEL_ERROR" ||
-            status === "TIMED_OUT" ||
-            status === "CLOSED"
+            status === "TIMED_OUT"
           ) {
             setRealtimeStatus("offline");
             startPolling();
-            // Exponential backoff retry, capped at 30s
             const delay = Math.min(1000 * 2 ** retryRef.current, 30_000);
             retryRef.current += 1;
-            if (channel) supabase.removeChannel(channel);
+            const oldChannel = channel;
+            channel = null;
+            if (oldChannel) supabase.removeChannel(oldChannel);
+            if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
             retryTimerRef.current = setTimeout(connect, delay);
           }
         });
