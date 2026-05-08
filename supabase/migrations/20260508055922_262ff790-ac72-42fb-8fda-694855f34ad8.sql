@@ -1,0 +1,1 @@
+ALTER TABLE public.aviator_admin_controls ADD COLUMN IF NOT EXISTS actual_crash numeric;

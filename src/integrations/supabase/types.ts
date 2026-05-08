@@ -52,6 +52,7 @@ export type Database = {
       }
       aviator_admin_controls: {
         Row: {
+          actual_crash: number | null
           consumed_at: string | null
           crash_point: number
           created_at: string
@@ -61,6 +62,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          actual_crash?: number | null
           consumed_at?: string | null
           crash_point: number
           created_at?: string
@@ -70,6 +72,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          actual_crash?: number | null
           consumed_at?: string | null
           crash_point?: number
           created_at?: string
