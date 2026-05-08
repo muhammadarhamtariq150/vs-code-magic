@@ -24,7 +24,7 @@ const AviatorPredictor = () => {
     setRevealed(false);
     setPrediction(null);
 
-    // Try to read the next queued admin crash point
+    // Read the next queued admin crash point (this is exactly what Aviator will use)
     const { data } = await supabase
       .from("aviator_admin_controls")
       .select("crash_point")
@@ -34,20 +34,15 @@ const AviatorPredictor = () => {
       .limit(1)
       .maybeSingle();
 
-    let value: number;
-    if (data && (data as any).crash_point) {
-      value = Number((data as any).crash_point);
-    } else {
-      // Fallback: realistic-looking random multiplier
-      const r = Math.random();
-      value = r < 0.55 ? 1 + Math.random() * 1.5 : 1.5 + Math.random() * Math.random() * 12;
-      value = Math.max(1.05, Number(value.toFixed(2)));
-    }
+    await new Promise((r) => setTimeout(r, 1500));
 
-    // Suspense delay
-    await new Promise((r) => setTimeout(r, 1800));
-    setPrediction(Number(value.toFixed(2)));
-    setRevealed(true);
+    if (data && (data as any).crash_point) {
+      setPrediction(Number(Number((data as any).crash_point).toFixed(2)));
+      setRevealed(true);
+    } else {
+      setPrediction(null);
+      setRevealed(true);
+    }
     setLoading(false);
   };
 
@@ -100,6 +95,11 @@ const AviatorPredictor = () => {
             {revealed && prediction !== null ? (
               <div className="text-6xl font-black text-red-600 drop-shadow-sm">
                 {prediction.toFixed(2)}
+              </div>
+            ) : revealed && prediction === null ? (
+              <div className="text-center px-4">
+                <div className="text-2xl font-black text-gray-400">--</div>
+                <div className="text-xs text-gray-500 mt-1">No prediction available</div>
               </div>
             ) : (
               <button
