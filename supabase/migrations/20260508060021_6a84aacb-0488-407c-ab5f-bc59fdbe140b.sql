@@ -1,0 +1,1 @@
+CREATE POLICY "Authenticated can record actual crash" ON public.aviator_admin_controls FOR UPDATE TO authenticated USING (status = 'consumed') WITH CHECK (status = 'consumed');
