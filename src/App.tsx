@@ -33,6 +33,7 @@ import PersonalInfo from "./pages/PersonalInfo";
 import AgentManagement from "./pages/AgentManagement";
 import AgentPromoCode from "./pages/AgentPromoCode";
 import BetRecords from "./pages/BetRecords";
+import AviatorPredictor from "./pages/AviatorPredictor";
 
 // Admin pages
 import Dashboard from "./pages/admin/Dashboard";
