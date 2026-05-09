@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Wallet, CreditCard, ArrowLeft, Landmark } from "lucide-react";
+import { Wallet, CreditCard, ArrowLeft, Landmark, Smartphone } from "lucide-react";
 import WithdrawalForm from "./WithdrawalForm";
 
 interface WithdrawalDialogProps {
@@ -9,7 +9,7 @@ interface WithdrawalDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export type WithdrawalMethod = "bank" | "binance" | "upi";
+export type WithdrawalMethod = "bank" | "binance" | "upi" | "easypaisa";
 
 interface WithdrawalMethodConfig {
   id: WithdrawalMethod;
