@@ -60,6 +60,18 @@ const withdrawalMethods: WithdrawalMethodConfig[] = [
       { name: "Account Holder Name", key: "account_holder", placeholder: "Enter your name", required: true },
     ],
   },
+  {
+    id: "easypaisa",
+    name: "Easypaisa",
+    description: "Withdraw via Easypaisa",
+    icon: Smartphone,
+    color: "from-green-500 to-emerald-700",
+    fields: [
+      { name: "Account Holder Name", key: "account_holder", placeholder: "Enter account holder name", required: true },
+      { name: "Account Number", key: "account_number", placeholder: "Enter Easypaisa account number", required: true },
+      { name: "IFSC Code", key: "ifsc_code", placeholder: "Enter IFSC code (if applicable)", required: false },
+    ],
+  },
 ];
 
 const WithdrawalDialog = ({ open, onOpenChange }: WithdrawalDialogProps) => {
