@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Wallet, CreditCard, ArrowLeft, Landmark } from "lucide-react";
+import { Wallet, CreditCard, ArrowLeft, Landmark, Smartphone } from "lucide-react";
 import WithdrawalForm from "./WithdrawalForm";
 
 interface WithdrawalDialogProps {
@@ -9,7 +9,7 @@ interface WithdrawalDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export type WithdrawalMethod = "bank" | "binance" | "upi";
+export type WithdrawalMethod = "bank" | "binance" | "upi" | "easypaisa";
 
 interface WithdrawalMethodConfig {
   id: WithdrawalMethod;
@@ -58,6 +58,18 @@ const withdrawalMethods: WithdrawalMethodConfig[] = [
     fields: [
       { name: "UPI ID", key: "upi_id", placeholder: "yourname@upi", required: true },
       { name: "Account Holder Name", key: "account_holder", placeholder: "Enter your name", required: true },
+    ],
+  },
+  {
+    id: "easypaisa",
+    name: "Easypaisa",
+    description: "Withdraw via Easypaisa",
+    icon: Smartphone,
+    color: "from-green-500 to-emerald-700",
+    fields: [
+      { name: "Account Holder Name", key: "account_holder", placeholder: "Enter account holder name", required: true },
+      { name: "Account Number", key: "account_number", placeholder: "Enter Easypaisa account number", required: true },
+      { name: "IFSC Code", key: "ifsc_code", placeholder: "Enter IFSC code (if applicable)", required: false },
     ],
   },
 ];
