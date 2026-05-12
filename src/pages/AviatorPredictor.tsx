@@ -24,7 +24,6 @@ const AviatorPredictor = () => {
     setRevealed(false);
     setPrediction(null);
 
-    // Read the next queued admin crash point (this is exactly what Aviator will use)
     const { data } = await supabase
       .from("aviator_admin_controls")
       .select("crash_point")
@@ -34,17 +33,26 @@ const AviatorPredictor = () => {
       .limit(1)
       .maybeSingle();
 
-    await new Promise((r) => setTimeout(r, 1500));
-
     if (data && (data as any).crash_point) {
       setPrediction(Number(Number((data as any).crash_point).toFixed(2)));
-      setRevealed(true);
-    } else {
-      setPrediction(null);
-      setRevealed(true);
     }
+    setRevealed(true);
     setLoading(false);
   };
+
+  // Prefetch on mount for instant first reveal
+  useEffect(() => {
+    const prefetch = async () => {
+      await supabase
+        .from("aviator_admin_controls")
+        .select("crash_point")
+        .eq("status", "pending")
+        .order("position", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+    };
+    prefetch();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
