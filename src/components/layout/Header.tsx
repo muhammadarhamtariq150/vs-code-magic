@@ -63,10 +63,11 @@ const Header = () => {
         {user ? (
           <div className="flex items-center gap-1.5 sm:gap-3">
             {isAdmin && (
-              <Link to="/admin" onClick={() => playClick()}>
+              <Link to="/admin" onClick={() => playClick()} aria-label="Open admin panel">
                 <Button 
                   variant="outline" 
                   size="sm"
+                  aria-label="Open admin panel"
                   className="h-8 sm:h-9 px-2 sm:px-3 border-primary/50 text-primary hover:bg-primary/10"
                 >
                   <Shield className="w-4 h-4" />
@@ -85,6 +86,7 @@ const Header = () => {
             <Button 
               variant="outline"
               size="sm"
+              aria-label="Withdraw funds"
               className="h-8 sm:h-9 px-2.5 sm:px-4 border-primary/50 text-primary hover:bg-primary/10 font-medium"
               onClick={handleWithdrawalOpen}
             >

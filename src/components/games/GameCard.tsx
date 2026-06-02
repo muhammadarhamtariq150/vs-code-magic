@@ -35,7 +35,8 @@ const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
       <div className="relative aspect-[4/3] overflow-hidden">
         <img 
           src={image} 
-          alt={name}
+          alt={`Play ${name} casino game on 7xBet`}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         
