@@ -214,7 +214,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
         }
       }
 
-      // Direct registration without email verification
+      // Sign up (with auto-confirm enabled this also creates a session)
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
@@ -237,18 +237,28 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
         return;
       }
 
+      // Ensure the user is signed in immediately (smooth fallback if session missing)
+      if (!signUpData.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password,
+        });
+        if (signInError) {
+          toast.error(signInError.message);
+          return;
+        }
+      }
+
       // Update profile with agent_id if promo code was used
       if (agentId && signUpData.user) {
         await supabase
           .from("profiles")
           .update({ agent_id: agentId })
           .eq("user_id", signUpData.user.id);
-
-        // Note: uses_count will be updated by the agent when they view their stats
       }
 
       const bonusMsg = promoCode.trim() && promoCodeValid ? " You'll receive ₨100 bonus after your first deposit!" : "";
-      toast.success(`Account created successfully!${bonusMsg}`);
+      toast.success(`Welcome, ${username.trim()}! You're now logged in.${bonusMsg}`);
       resetForm();
       onOpenChange(false);
     } catch (error: any) {
