@@ -1,0 +1,31 @@
+# 7xBet
+
+> 7xBet is an online casino and betting platform offering 20+ native games including slots, Aviator, Wingo, Roulette, Dragon Tiger, and more, with fast deposits and instant withdrawals.
+
+## Pages
+
+- [Home](/): Browse the full game lobby across slots, live, lottery, cards, and sports categories.
+- [Promotions](/promo): Current bonuses, agent promo codes, and referral rewards.
+
+## Games
+
+- [Slots 777](/games/slots-777): Classic 5-reel slot machine with 777 jackpot wins.
+- [Love Slots](/games/love-slots): Romance-themed slot game.
+- [Crazy 777](/games/crazy-777): High-volatility 777 slot game.
+- [Aviator](/games/aviator): Crash-style multiplier game with dual betting.
+- [Wingo](/games/wingo): Color and number prediction lottery game.
+- [Roulette](/games/roulette): Classic casino roulette.
+- [Dragon Tiger](/games/dragon-tiger): Fast-paced card comparison game.
+- [Blackjack 21](/games/21): Beat the dealer to 21.
+- [Dice](/games/dice): Roll-the-dice betting game.
+- [Crash](/games/crash): Cash out before the multiplier crashes.
+- [Plinko](/games/plinko): Drop the ball, win the multiplier.
+- [Chicken Road](/games/chicken-road): Cross the road, dodge the traps.
+- [Gems Mines](/games/gems-mines): Reveal gems while avoiding mines.
+- [High or Low](/games/high-or-low): Predict the next card.
+- [Keno](/games/keno): Lottery-style number draw.
+- [Lottery](/games/lottery): Number-pick lottery.
+- [Jackpot](/games/jackpot): Progressive jackpot game.
+- [Wheel of Fortune](/games/wheel-fortune): Spin-the-wheel prize game.
+- [SOS](/games/sos): Strategy mini-game.
+- [F1 Formula](/games/f1-formula): Racing-themed betting game.
