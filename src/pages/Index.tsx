@@ -39,6 +39,7 @@ const Index = () => {
       default:
         return (
           <main className="flex-1 p-4 pb-20">
+            <h1 className="sr-only">7xBet — Online Casino and Betting Games</h1>
             <div className="flex flex-col gap-4 mb-4">
               <SearchBar 
                 value={searchQuery} 
@@ -88,6 +89,7 @@ const Index = () => {
           />
           
           <main className="flex-1 p-6">
+            <h1 className="sr-only">7xBet — Online Casino and Betting Games</h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <CategoryTabs 
                 activeTab={activeTab} 
