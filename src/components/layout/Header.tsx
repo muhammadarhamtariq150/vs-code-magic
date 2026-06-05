@@ -57,7 +57,7 @@ const Header = () => {
           <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center shadow-lg">
             <span className="text-lg sm:text-xl">🎰</span>
           </div>
-          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">7xBet</span>
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">games7play</span>
         </Link>
         
         {user ? (
