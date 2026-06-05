@@ -102,7 +102,7 @@ const AviatorPredictor = () => {
           </h1>
 
           <div className="mt-2 inline-block bg-gradient-to-r from-red-700 to-red-500 text-white font-extrabold text-sm px-4 py-1.5 rounded-md shadow-lg tracking-wide">
-            7XBET • OFFICIAL BOT
+            GAMES7PLAY • OFFICIAL BOT
           </div>
 
           <div className="mt-4 bg-rose-50/70 rounded-xl p-3 text-sm space-y-1">
