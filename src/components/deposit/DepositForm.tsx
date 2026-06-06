@@ -93,6 +93,14 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
       });
       return;
     }
+    if (method === "easypaisa" && numAmount < 500) {
+      toast({
+        title: "Minimum deposit not met",
+        description: "Easypaisa minimum deposit is ₹500",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep("payment");
   };
 
