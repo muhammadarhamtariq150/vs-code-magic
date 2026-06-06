@@ -1,9 +1,9 @@
 import { useCallback, useRef } from "react";
+import musicAsset from "@/assets/aviator-music.mp3.asset.json";
 
 export const useAviatorSound = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const flyingOscRef = useRef<OscillatorNode | null>(null);
-  const flyingGainRef = useRef<GainNode | null>(null);
+  const musicRef = useRef<HTMLAudioElement | null>(null);
 
   const getCtx = useCallback(() => {
     if (!audioContextRef.current) {
@@ -12,64 +12,41 @@ export const useAviatorSound = () => {
     return audioContextRef.current;
   }, []);
 
+  const getMusic = useCallback(() => {
+    if (!musicRef.current) {
+      const a = new Audio(musicAsset.url);
+      a.loop = true;
+      a.volume = 0.5;
+      musicRef.current = a;
+    }
+    return musicRef.current;
+  }, []);
+
   const playTakeoff = useCallback(() => {
     try {
-      const ctx = getCtx();
-      // Engine roar
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const osc2 = ctx.createOscillator();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(80, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.8);
-      osc2.type = "triangle";
-      osc2.frequency.setValueAtTime(120, ctx.currentTime);
-      osc2.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.8);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
-      osc.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc2.start();
-      osc.stop(ctx.currentTime + 1);
-      osc2.stop(ctx.currentTime + 1);
+      const a = getMusic();
+      a.currentTime = 0;
+      a.volume = 0.5;
+      void a.play();
     } catch {}
-  }, [getCtx]);
+  }, [getMusic]);
 
   const startFlyingSound = useCallback(() => {
     try {
-      const ctx = getCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(100, ctx.currentTime);
-      gain.gain.setValueAtTime(0.04, ctx.currentTime);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      flyingOscRef.current = osc;
-      flyingGainRef.current = gain;
+      const a = getMusic();
+      if (a.paused) void a.play();
     } catch {}
-  }, [getCtx]);
+  }, [getMusic]);
 
-  const updateFlyingPitch = useCallback((multiplier: number) => {
-    try {
-      if (flyingOscRef.current && flyingGainRef.current) {
-        const ctx = getCtx();
-        const freq = 100 + multiplier * 30;
-        flyingOscRef.current.frequency.setValueAtTime(Math.min(freq, 600), ctx.currentTime);
-        flyingGainRef.current.gain.setValueAtTime(Math.min(0.04 + multiplier * 0.005, 0.1), ctx.currentTime);
-      }
-    } catch {}
-  }, [getCtx]);
+  const updateFlyingPitch = useCallback((_multiplier: number) => {
+    // no-op: using music track instead of synthesized pitch
+  }, []);
 
   const stopFlyingSound = useCallback(() => {
     try {
-      if (flyingOscRef.current) {
-        flyingOscRef.current.stop();
-        flyingOscRef.current = null;
-        flyingGainRef.current = null;
+      if (musicRef.current) {
+        musicRef.current.pause();
+        musicRef.current.currentTime = 0;
       }
     } catch {}
   }, []);
@@ -78,7 +55,6 @@ export const useAviatorSound = () => {
     try {
       stopFlyingSound();
       const ctx = getCtx();
-      // Explosion
       const bufferSize = ctx.sampleRate * 0.4;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
