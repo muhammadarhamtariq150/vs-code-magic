@@ -93,6 +93,14 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
       });
       return;
     }
+    if (method === "easypaisa" && numAmount < 500) {
+      toast({
+        title: "Minimum deposit not met",
+        description: "Easypaisa minimum deposit is ₹500",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep("payment");
   };
 
@@ -337,12 +345,15 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
         <Input
           id="amount"
           type="number"
-          placeholder="Enter amount"
+          placeholder={method === "easypaisa" ? "Minimum ₹500" : "Enter amount"}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          min="1"
+          min={method === "easypaisa" ? "500" : "1"}
           step="any"
         />
+        {method === "easypaisa" && (
+          <p className="text-xs text-muted-foreground">Minimum deposit for Easypaisa is ₹500</p>
+        )}
       </div>
 
       <Button onClick={handleAmountSubmit} className="w-full">
