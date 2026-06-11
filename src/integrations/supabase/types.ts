@@ -58,6 +58,7 @@ export type Database = {
           created_at: string
           id: string
           position: number
+          round_id: number
           set_by: string
           status: string
         }
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string
           id?: string
           position?: number
+          round_id?: number
           set_by: string
           status?: string
         }
@@ -78,6 +80,7 @@ export type Database = {
           created_at?: string
           id?: string
           position?: number
+          round_id?: number
           set_by?: string
           status?: string
         }
