@@ -1,0 +1,1 @@
+ALTER TABLE public.aviator_admin_controls ADD COLUMN IF NOT EXISTS round_id BIGINT NOT NULL DEFAULT (floor(random() * 90000000) + 10000000)::bigint;

@@ -59,7 +59,7 @@ const Aviator = () => {
     try {
       const { data: next } = await supabase
         .from("aviator_admin_controls")
-        .select("id, crash_point")
+        .select("id, crash_point, round_id")
         .eq("status", "pending")
         .order("position", { ascending: true })
         .order("created_at", { ascending: true })
@@ -71,11 +71,14 @@ const Aviator = () => {
           .update({ status: "consumed", consumed_at: new Date().toISOString() })
           .eq("id", (next as any).id)
           .eq("status", "pending")
-          .select("id, crash_point")
+          .select("id, crash_point, round_id")
           .maybeSingle();
         if (claimed) {
           chosen = Number((claimed as any).crash_point);
           consumedId = (claimed as any).id;
+          if ((claimed as any).round_id) {
+            setRoundId(Number((claimed as any).round_id));
+          }
         }
       }
     } catch (e) {
