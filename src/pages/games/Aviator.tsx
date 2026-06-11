@@ -56,6 +56,7 @@ const Aviator = () => {
     // Check admin queue first
     let chosen: number | null = null;
     let consumedId: string | null = null;
+    let nextRoundId: number | null = null;
     try {
       const { data: next } = await supabase
         .from("aviator_admin_controls")
@@ -77,10 +78,15 @@ const Aviator = () => {
           chosen = Number((claimed as any).crash_point);
           consumedId = (claimed as any).id;
           if ((claimed as any).round_id) {
-            setRoundId(Number((claimed as any).round_id));
+            nextRoundId = Number((claimed as any).round_id);
           }
         }
       }
+      if (nextRoundId === null) {
+        const { data: seqId } = await supabase.rpc("next_aviator_round_id");
+        if (seqId != null) nextRoundId = Number(seqId);
+      }
+      if (nextRoundId !== null) setRoundId(nextRoundId);
     } catch (e) {
       console.error("aviator admin queue", e);
     }
@@ -133,7 +139,6 @@ const Aviator = () => {
 
     const crashPoint = Number(crashPointRef.current.toFixed(2));
     setHistory((prev) => [crashPoint, ...prev.slice(0, 19)]);
-    setRoundId((prev) => prev + 1);
 
     // Record actual crash on consumed admin entry for verification log
     if (consumedIdRef.current) {
