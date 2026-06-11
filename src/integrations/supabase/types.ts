@@ -677,6 +677,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      next_aviator_round_id: { Args: never; Returns: number }
       set_security_password: {
         Args: { _new_password: string }
         Returns: undefined
