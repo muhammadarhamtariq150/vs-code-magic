@@ -17,6 +17,7 @@ interface ControlEntry {
   created_at: string;
   consumed_at?: string | null;
   actual_crash?: number | null;
+  round_id?: number | null;
 }
 
 const AviatorControl = () => {
@@ -231,6 +232,9 @@ const AviatorControl = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
+                  <div className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full mb-1 font-mono">
+                    Round ID: {queue[0].round_id ?? "—"}
+                  </div>
                   <div className={`text-5xl font-black ${queue[0].crash_point >= 2 ? "text-green-600" : "text-red-600"}`}>
                     {Number(queue[0].crash_point).toFixed(2)}x
                   </div>
@@ -283,6 +287,7 @@ const AviatorControl = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Position</TableHead>
+                  <TableHead>Round ID</TableHead>
                   <TableHead>Crash Point</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Added At</TableHead>
@@ -297,6 +302,7 @@ const AviatorControl = () => {
                         #{i + 1}
                       </span>
                     </TableCell>
+                    <TableCell className="font-mono text-xs">{q.round_id ?? "—"}</TableCell>
                     <TableCell>
                       <span className={`font-bold ${q.crash_point >= 2 ? "text-green-500" : "text-red-500"}`}>
                         {Number(q.crash_point).toFixed(2)}x
