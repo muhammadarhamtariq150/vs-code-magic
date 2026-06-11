@@ -202,6 +202,23 @@ const AviatorControl = () => {
               Pre-set the next crash points. The plane will fly until each value, in order.
             </p>
           </div>
+          {currentRoundId != null && (
+            <div
+              className={`flex flex-col items-end px-3 py-1.5 rounded-lg border ${
+                currentRoundStatus === "active"
+                  ? "bg-green-500/10 border-green-500/30"
+                  : "bg-blue-500/10 border-blue-500/30"
+              }`}
+              title={currentRoundStatus === "active" ? "Round currently in progress" : "Next round ready"}
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {currentRoundStatus === "active" ? "🔴 Active Round" : "⏳ Next Round"}
+              </span>
+              <span className="text-lg font-black font-mono leading-none">
+                {currentRoundId}
+              </span>
+            </div>
+          )}
           <span
             className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${
               realtimeStatus === "live"
