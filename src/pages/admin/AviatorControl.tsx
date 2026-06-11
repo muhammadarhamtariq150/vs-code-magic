@@ -28,6 +28,8 @@ const AviatorControl = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
+  const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<"active" | "next" | "idle">("idle");
   const retryRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
