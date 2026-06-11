@@ -50,6 +50,32 @@ const AviatorControl = () => {
       .order("created_at", { ascending: false })
       .limit(20);
     setHistory((consumed as any) || []);
+
+    // Determine currently active / next round
+    const { data: active } = await supabase
+      .from("aviator_admin_controls")
+      .select("round_id")
+      .eq("status", "consumed")
+      .is("actual_crash", null)
+      .order("consumed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (active && (active as any).round_id) {
+      setCurrentRoundId(Number((active as any).round_id));
+      setCurrentRoundStatus("active");
+    } else if (pending && pending.length > 0 && (pending[0] as any).round_id) {
+      setCurrentRoundId(Number((pending[0] as any).round_id));
+      setCurrentRoundStatus("next");
+    } else {
+      const { data: seqId } = await supabase.rpc("next_aviator_round_id");
+      if (seqId != null) {
+        setCurrentRoundId(Number(seqId));
+        setCurrentRoundStatus("next");
+      } else {
+        setCurrentRoundId(null);
+        setCurrentRoundStatus("idle");
+      }
+    }
   };
 
   const manualRefresh = async () => {
