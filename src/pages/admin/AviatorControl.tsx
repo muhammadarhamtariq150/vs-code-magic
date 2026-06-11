@@ -28,6 +28,8 @@ const AviatorControl = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
+  const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<"active" | "next" | "idle">("idle");
   const retryRef = useRef(0);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -48,6 +50,32 @@ const AviatorControl = () => {
       .order("created_at", { ascending: false })
       .limit(20);
     setHistory((consumed as any) || []);
+
+    // Determine currently active / next round
+    const { data: active } = await supabase
+      .from("aviator_admin_controls")
+      .select("round_id")
+      .eq("status", "consumed")
+      .is("actual_crash", null)
+      .order("consumed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (active && (active as any).round_id) {
+      setCurrentRoundId(Number((active as any).round_id));
+      setCurrentRoundStatus("active");
+    } else if (pending && pending.length > 0 && (pending[0] as any).round_id) {
+      setCurrentRoundId(Number((pending[0] as any).round_id));
+      setCurrentRoundStatus("next");
+    } else {
+      const { data: seqId } = await supabase.rpc("next_aviator_round_id");
+      if (seqId != null) {
+        setCurrentRoundId(Number(seqId));
+        setCurrentRoundStatus("next");
+      } else {
+        setCurrentRoundId(null);
+        setCurrentRoundStatus("idle");
+      }
+    }
   };
 
   const manualRefresh = async () => {
@@ -174,6 +202,23 @@ const AviatorControl = () => {
               Pre-set the next crash points. The plane will fly until each value, in order.
             </p>
           </div>
+          {currentRoundId != null && (
+            <div
+              className={`flex flex-col items-end px-3 py-1.5 rounded-lg border ${
+                currentRoundStatus === "active"
+                  ? "bg-green-500/10 border-green-500/30"
+                  : "bg-blue-500/10 border-blue-500/30"
+              }`}
+              title={currentRoundStatus === "active" ? "Round currently in progress" : "Next round ready"}
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                {currentRoundStatus === "active" ? "🔴 Active Round" : "⏳ Next Round"}
+              </span>
+              <span className="text-lg font-black font-mono leading-none">
+                {currentRoundId}
+              </span>
+            </div>
+          )}
           <span
             className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${
               realtimeStatus === "live"
