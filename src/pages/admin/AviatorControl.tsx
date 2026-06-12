@@ -24,7 +24,8 @@ const AviatorControl = () => {
   const { user } = useAuth();
   const [queue, setQueue] = useState<ControlEntry[]>([]);
   const [history, setHistory] = useState<ControlEntry[]>([]);
-  const [input, setInput] = useState("");
+  const [roundIdInput, setRoundIdInput] = useState("");
+  const [crashInput, setCrashInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
