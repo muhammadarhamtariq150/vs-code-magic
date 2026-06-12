@@ -79,6 +79,8 @@ const Aviator = () => {
           consumedId = (claimed as any).id;
           if ((claimed as any).round_id) {
             nextRoundId = Number((claimed as any).round_id);
+            // Keep sequence in sync so future random rounds continue forward
+            try { await supabase.rpc("advance_aviator_round_seq", { _to: nextRoundId }); } catch {}
           }
         }
       }
