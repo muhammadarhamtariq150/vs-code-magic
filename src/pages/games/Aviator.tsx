@@ -30,7 +30,7 @@ const Aviator = () => {
   const [autoCashOut1, setAutoCashOut1] = useState(0);
   const [autoCashOut2, setAutoCashOut2] = useState(0);
   const [history, setHistory] = useState<number[]>([2.96, 4.30, 5.15, 1.48, 1.09, 1.83, 4.96, 4.99, 1.46, 2.90, 4.63, 1.31, 11.14, 4.41]);
-  const [roundId, setRoundId] = useState(Math.floor(10000000 + Math.random() * 90000000));
+  const [roundId, setRoundId] = useState(1);
   const [gamePhase, setGamePhase] = useState<"waiting" | "flying" | "crashed">("waiting");
   const autoCashOut1Ref = useRef(0);
   const autoCashOut2Ref = useRef(0);
