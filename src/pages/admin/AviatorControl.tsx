@@ -299,20 +299,36 @@ const AviatorControl = () => {
         </Card>
 
         <Card className="p-5 space-y-4">
-          <h2 className="font-semibold">Add crash points</h2>
-          <div className="flex gap-2">
-            <Input
-              placeholder="e.g. 1.7, 3, 2, 1.25, 5.5"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addPoints()}
-            />
-            <Button onClick={addPoints} disabled={loading} className="gap-2">
-              <Plus className="w-4 h-4" /> Add
-            </Button>
+          <h2 className="font-semibold">Set crash point for a specific Round ID</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Round ID</label>
+              <Input
+                placeholder="e.g. 77234555"
+                value={roundIdInput}
+                inputMode="numeric"
+                onChange={(e) => setRoundIdInput(e.target.value.replace(/[^0-9]/g, ""))}
+                onKeyDown={(e) => e.key === "Enter" && addPoints()}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Crash Point (x)</label>
+              <Input
+                placeholder="e.g. 10.6"
+                value={crashInput}
+                inputMode="decimal"
+                onChange={(e) => setCrashInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addPoints()}
+              />
+            </div>
+            <div className="flex items-end">
+              <Button onClick={addPoints} disabled={loading} className="gap-2 w-full">
+                <Plus className="w-4 h-4" /> Add
+              </Button>
+            </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            Separate values with commas or spaces. Min 1.00. Each round consumes the next value in the queue.
+            Enter the exact Round ID you want to control and the crash multiplier. When the game reaches that round, the plane will crash at exactly that value.
           </p>
         </Card>
 
