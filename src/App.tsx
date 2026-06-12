@@ -34,6 +34,7 @@ import AgentManagement from "./pages/AgentManagement";
 import AgentPromoCode from "./pages/AgentPromoCode";
 import BetRecords from "./pages/BetRecords";
 import AviatorPredictor from "./pages/AviatorPredictor";
+import ControllerApp from "./pages/ControllerApp";
 
 // Admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -59,6 +60,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/controller" element={<ControllerApp />} />
           <Route path="/games/gems-mines" element={<GemsMines />} />
           <Route path="/games/sos" element={<SOS />} />
           <Route path="/games/lottery" element={<Lottery />} />
