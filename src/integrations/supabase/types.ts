@@ -663,6 +663,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      advance_aviator_round_seq: { Args: { _to: number }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

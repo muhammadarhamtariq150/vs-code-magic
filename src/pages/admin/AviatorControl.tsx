@@ -24,7 +24,8 @@ const AviatorControl = () => {
   const { user } = useAuth();
   const [queue, setQueue] = useState<ControlEntry[]>([]);
   const [history, setHistory] = useState<ControlEntry[]>([]);
-  const [input, setInput] = useState("");
+  const [roundIdInput, setRoundIdInput] = useState("");
+  const [crashInput, setCrashInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [realtimeStatus, setRealtimeStatus] = useState<"connecting" | "live" | "offline">("connecting");
@@ -144,33 +145,34 @@ const AviatorControl = () => {
 
   const addPoints = async () => {
     if (!user) return;
-    const parts = input
-      .split(/[,\s]+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => parseFloat(s))
-      .filter((n) => !isNaN(n) && n >= 1);
+    const crash = parseFloat(crashInput);
+    const roundId = parseInt(roundIdInput, 10);
 
-    if (parts.length === 0) {
-      toast.error("Enter valid multipliers (e.g. 1.7, 3, 2)");
+    if (isNaN(crash) || crash < 1) {
+      toast.error("Enter a valid crash point (≥ 1.00)");
+      return;
+    }
+    if (isNaN(roundId) || roundId < 1) {
+      toast.error("Enter a valid Round ID");
       return;
     }
 
     setLoading(true);
-    const startPos = queue.length;
-    const rows = parts.map((p, i) => ({
-      crash_point: p,
+    const row: any = {
+      crash_point: crash,
+      round_id: roundId,
       set_by: user.id,
-      position: startPos + i,
+      position: queue.length,
       status: "pending",
-    }));
+    };
 
-    const { error } = await supabase.from("aviator_admin_controls").insert(rows);
+    const { error } = await supabase.from("aviator_admin_controls").insert([row]);
     setLoading(false);
 
     if (error) return toast.error(error.message);
-    toast.success(`Added ${parts.length} crash point${parts.length > 1 ? "s" : ""}`);
-    setInput("");
+    toast.success(`Round ${roundId} will crash at ${crash.toFixed(2)}x`);
+    setRoundIdInput("");
+    setCrashInput("");
     load();
   };
 
@@ -297,20 +299,36 @@ const AviatorControl = () => {
         </Card>
 
         <Card className="p-5 space-y-4">
-          <h2 className="font-semibold">Add crash points</h2>
-          <div className="flex gap-2">
-            <Input
-              placeholder="e.g. 1.7, 3, 2, 1.25, 5.5"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addPoints()}
-            />
-            <Button onClick={addPoints} disabled={loading} className="gap-2">
-              <Plus className="w-4 h-4" /> Add
-            </Button>
+          <h2 className="font-semibold">Set crash point for a specific Round ID</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Round ID</label>
+              <Input
+                placeholder="e.g. 77234555"
+                value={roundIdInput}
+                inputMode="numeric"
+                onChange={(e) => setRoundIdInput(e.target.value.replace(/[^0-9]/g, ""))}
+                onKeyDown={(e) => e.key === "Enter" && addPoints()}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Crash Point (x)</label>
+              <Input
+                placeholder="e.g. 10.6"
+                value={crashInput}
+                inputMode="decimal"
+                onChange={(e) => setCrashInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addPoints()}
+              />
+            </div>
+            <div className="flex items-end">
+              <Button onClick={addPoints} disabled={loading} className="gap-2 w-full">
+                <Plus className="w-4 h-4" /> Add
+              </Button>
+            </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            Separate values with commas or spaces. Min 1.00. Each round consumes the next value in the queue.
+            Enter the exact Round ID you want to control and the crash multiplier. When the game reaches that round, the plane will crash at exactly that value.
           </p>
         </Card>
 
