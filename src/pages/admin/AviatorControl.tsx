@@ -145,33 +145,34 @@ const AviatorControl = () => {
 
   const addPoints = async () => {
     if (!user) return;
-    const parts = input
-      .split(/[,\s]+/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => parseFloat(s))
-      .filter((n) => !isNaN(n) && n >= 1);
+    const crash = parseFloat(crashInput);
+    const roundId = parseInt(roundIdInput, 10);
 
-    if (parts.length === 0) {
-      toast.error("Enter valid multipliers (e.g. 1.7, 3, 2)");
+    if (isNaN(crash) || crash < 1) {
+      toast.error("Enter a valid crash point (≥ 1.00)");
+      return;
+    }
+    if (isNaN(roundId) || roundId < 1) {
+      toast.error("Enter a valid Round ID");
       return;
     }
 
     setLoading(true);
-    const startPos = queue.length;
-    const rows = parts.map((p, i) => ({
-      crash_point: p,
+    const row: any = {
+      crash_point: crash,
+      round_id: roundId,
       set_by: user.id,
-      position: startPos + i,
+      position: queue.length,
       status: "pending",
-    }));
+    };
 
-    const { error } = await supabase.from("aviator_admin_controls").insert(rows);
+    const { error } = await supabase.from("aviator_admin_controls").insert([row]);
     setLoading(false);
 
     if (error) return toast.error(error.message);
-    toast.success(`Added ${parts.length} crash point${parts.length > 1 ? "s" : ""}`);
-    setInput("");
+    toast.success(`Round ${roundId} will crash at ${crash.toFixed(2)}x`);
+    setRoundIdInput("");
+    setCrashInput("");
     load();
   };
 
