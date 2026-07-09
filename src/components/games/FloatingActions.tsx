@@ -6,19 +6,6 @@ const FloatingActions = () => {
 
   return (
     <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
-      {/* WhatsApp Customer Support */}
-      <a
-        href="https://wa.me/923704587950"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="floating-action bg-green-500 hover:bg-green-600 text-white"
-        style={{ animationDelay: "0s" }}
-        onClick={() => playClick()}
-        aria-label="Customer Support on WhatsApp"
-        title="Customer Support on WhatsApp"
-      >
-        <Phone className="w-5 h-5" />
-      </a>
 
       {/* Message */}
       <button
