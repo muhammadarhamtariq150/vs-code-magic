@@ -663,6 +663,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_own_wallet_balance: { Args: { _delta: number }; Returns: number }
       advance_aviator_round_seq: { Args: { _to: number }; Returns: undefined }
       has_role: {
         Args: {
