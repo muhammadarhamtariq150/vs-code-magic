@@ -53,44 +53,19 @@ const Aviator = () => {
     setMultiplier(1.0);
     multiplierRef.current = 1.0;
 
-    // Check admin queue first
+    // Claim the next round server-side (admin queue + round id sequence)
     let chosen: number | null = null;
     let consumedId: string | null = null;
-    let nextRoundId: number | null = null;
     try {
-      const { data: next } = await supabase
-        .from("aviator_admin_controls")
-        .select("id, crash_point, round_id")
-        .eq("status", "pending")
-        .order("position", { ascending: true })
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (next) {
-        const { data: claimed } = await supabase
-          .from("aviator_admin_controls")
-          .update({ status: "consumed", consumed_at: new Date().toISOString() })
-          .eq("id", (next as any).id)
-          .eq("status", "pending")
-          .select("id, crash_point, round_id")
-          .maybeSingle();
-        if (claimed) {
-          chosen = Number((claimed as any).crash_point);
-          consumedId = (claimed as any).id;
-          if ((claimed as any).round_id) {
-            nextRoundId = Number((claimed as any).round_id);
-            // Keep sequence in sync so future random rounds continue forward
-            try { await supabase.rpc("advance_aviator_round_seq", { _to: nextRoundId }); } catch {}
-          }
-        }
-      }
-      if (nextRoundId === null) {
-        const { data: seqId } = await supabase.rpc("next_aviator_round_id");
-        if (seqId != null) nextRoundId = Number(seqId);
-      }
-      if (nextRoundId !== null) setRoundId(nextRoundId);
+      const { data, error } = await supabase.functions.invoke("aviator-round", {
+        body: { action: "claim" },
+      });
+      if (error) throw error;
+      if (data?.crash_point != null) chosen = Number(data.crash_point);
+      if (data?.control_id) consumedId = String(data.control_id);
+      if (data?.round_id != null) setRoundId(Number(data.round_id));
     } catch (e) {
-      console.error("aviator admin queue", e);
+      console.error("aviator round claim", e);
     }
     crashPointRef.current = chosen ?? (1 + Math.random() * Math.random() * 15);
     consumedIdRef.current = consumedId;
