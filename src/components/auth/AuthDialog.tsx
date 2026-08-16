@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eye, EyeOff, X, Mail, ArrowLeft, Loader2, KeyRound, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
