@@ -161,6 +161,26 @@ serve(async (req) => {
       const body = await req.json();
       const { roundId, betType, betValue, amount } = body;
 
+      // Validate bet input server-side
+      if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0 || amount > 1000000) {
+        return new Response(JSON.stringify({ error: "Invalid bet amount" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (!["number", "color", "size"].includes(betType) || typeof betValue !== "string") {
+        return new Response(JSON.stringify({ error: "Invalid bet" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof roundId !== "string" || !roundId) {
+        return new Response(JSON.stringify({ error: "Invalid round" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // Validate round is still accepting bets (at least 10 seconds before end)
       const { data: round, error: roundError } = await supabase
         .from("wingo_rounds")
@@ -302,6 +322,20 @@ serve(async (req) => {
       if (userError || !user) {
         return new Response(JSON.stringify({ error: userError || "Invalid user" }), {
           status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: adminRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!adminRole) {
+        return new Response(JSON.stringify({ error: "Admin access required" }), {
+          status: 403,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -473,6 +507,27 @@ serve(async (req) => {
 
     // Process round completion (called by cron or manually)
     if (action === "process-rounds") {
+      const authHeader = req.headers.get("Authorization");
+      const { user, error: userError } = await validateUser(authHeader);
+      if (userError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: procAdmin } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!procAdmin) {
+        return new Response(JSON.stringify({ error: "Admin access required" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const durationTypes = ["1min", "2min", "3min", "5min"];
       const results: any[] = [];
 
