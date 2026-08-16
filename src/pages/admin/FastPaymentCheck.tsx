@@ -388,7 +388,23 @@ const FastPaymentCheck = () => {
             </Table>
           </CardContent>
         </Card>
+
+        <Dialog open={!!screenshotUrl} onOpenChange={(o) => !o && setScreenshotUrl(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Payment Screenshot</DialogTitle>
+            </DialogHeader>
+            {screenshotUrl && (
+              <img
+                src={screenshotUrl}
+                alt="Deposit payment screenshot submitted by user"
+                className="w-full rounded-lg"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
+
     </AdminLayout>
   );
 };
