@@ -12,11 +12,6 @@ interface AuthDialogProps {
 
 type Step = "form" | "verify" | "forgot" | "reset-sent";
 
-// Generate a 6-digit OTP code
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
 const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
   const [step, setStep] = useState<Step>("form");
@@ -31,9 +26,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  
-  // Store the generated OTP for verification
-  const generatedOTPRef = useRef<string>("");
 
   // Check for promo code in URL on mount
   useEffect(() => {
@@ -75,7 +67,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     setPromoCodeValid(null);
     setOtpCode("");
     setStep("form");
-    generatedOTPRef.current = "";
   };
 
   const validateEmail = (email: string) => {
@@ -104,17 +95,30 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       const identifier = email.trim();
       let loginEmail = identifier.toLowerCase();
 
-      // If it's not an email, treat as username and resolve to email
+      // If it's not an email, sign in by username through a secure edge function
       if (!validateEmail(identifier)) {
         const { data, error: resolveErr } = await supabase.functions.invoke("resolve-username", {
-          body: { username: identifier },
+          body: { username: identifier, password },
         });
-        if (resolveErr || !data?.email) {
+        if (resolveErr || !data?.access_token || !data?.refresh_token) {
           toast.error("Invalid username or password");
           setLoading(false);
           return;
         }
-        loginEmail = data.email;
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        });
+        if (sessionError) {
+          toast.error("Invalid username or password");
+          setLoading(false);
+          return;
+        }
+        toast.success("Welcome back!");
+        resetForm();
+        onOpenChange(false);
+        setLoading(false);
+        return;
       }
 
       const { error } = await supabase.auth.signInWithPassword({
@@ -145,33 +149,15 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     }
   };
 
-  // Send custom OTP via our edge function
+  // Ask Supabase to send its own verification code (server-side generated & verified)
   const sendCustomOTP = async () => {
-    const otp = generateOTP();
-    generatedOTPRef.current = otp;
-
-    console.log("Sending OTP:", otp, "to:", email.trim().toLowerCase());
-
-    try {
-      const { data, error } = await supabase.functions.invoke('send-verification-email', {
-        body: {
-          email: email.trim().toLowerCase(),
-          username: username.trim() || email.split('@')[0],
-          otp_code: otp,
-        },
-      });
-
-      if (error) {
-        console.error("Error sending OTP email:", error);
-        throw new Error(error.message || "Failed to send verification email");
-      }
-
-      console.log("OTP email sent successfully:", data);
-      return true;
-    } catch (error: any) {
-      console.error("Failed to send OTP:", error);
-      throw error;
-    }
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: email.trim().toLowerCase(),
+      options: { emailRedirectTo: `${window.location.origin}/` },
+    });
+    if (error) throw new Error(error.message || "Failed to send verification email");
+    return true;
   };
 
   const handleRegister = async () => {
@@ -291,48 +277,19 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
     setLoading(true);
     try {
-      // Verify the OTP code matches what we generated
-      if (otpCode !== generatedOTPRef.current) {
-        toast.error("Invalid verification code");
-        setLoading(false);
+      // Code is verified server-side by Supabase — never in the browser
+      const { error } = await supabase.auth.verifyOtp({
+        email: email.trim().toLowerCase(),
+        token: otpCode,
+        type: "email",
+      });
+
+      if (error) {
+        toast.error("Invalid or expired verification code");
         return;
       }
 
-      // OTP verified, now create the actual Supabase account
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            username: username.trim(),
-            email_verified: true,
-          },
-        },
-      });
-
-      if (signUpError) {
-        if (signUpError.message.includes("already registered")) {
-          // User exists, try to sign them in
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: email.trim().toLowerCase(),
-            password,
-          });
-
-          if (signInError) {
-            toast.error("This email is already registered. Please login instead.");
-            setActiveTab("login");
-            setStep("form");
-            setOtpCode("");
-            return;
-          }
-        } else {
-          toast.error(signUpError.message);
-          return;
-        }
-      }
-
-      toast.success("Email verified! Account created successfully!");
+      toast.success("Email verified! You're now logged in.");
       resetForm();
       onOpenChange(false);
     } catch (error) {
@@ -379,7 +336,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const handleBack = () => {
     setStep("form");
     setOtpCode("");
-    generatedOTPRef.current = "";
   };
 
   return (
