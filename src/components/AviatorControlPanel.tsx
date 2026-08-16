@@ -66,7 +66,7 @@ const AviatorControlPanel = () => {
       setCurrentRoundId(Number((pending[0] as any).round_id));
       setCurrentRoundStatus("next");
     } else {
-      const { data: seqId } = await supabase.rpc("next_aviator_round_id");
+      const { data: seqId } = await supabase.rpc("admin_peek_next_aviator_round_id");
       if (seqId != null) {
         setCurrentRoundId(Number(seqId));
         setCurrentRoundStatus("next");
