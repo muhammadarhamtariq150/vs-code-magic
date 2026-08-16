@@ -30,17 +30,34 @@ export const useWallet = () => {
     }
   };
 
+  // Balance changes go through a guarded server-side function.
+  // Direct table updates are blocked by RLS.
   const updateBalance = async (newBalance: number) => {
     if (!user) return false;
 
     try {
-      const { error } = await supabase
+      const { data: current, error: readError } = await supabase
         .from("wallets")
-        .update({ balance: newBalance })
-        .eq("user_id", user.id);
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (readError) throw readError;
+
+      const currentBalance = Number(current?.balance ?? 0);
+      const delta = Number((newBalance - currentBalance).toFixed(2));
+
+      if (delta === 0) {
+        setBalance(currentBalance);
+        return true;
+      }
+
+      const { data, error } = await supabase.rpc("adjust_own_wallet_balance", {
+        _delta: delta,
+      });
 
       if (error) throw error;
-      setBalance(newBalance);
+      setBalance(Number(data ?? newBalance));
       return true;
     } catch (error) {
       console.error("Error updating balance:", error);

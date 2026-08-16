@@ -14,3 +14,5 @@ verify_jwt = false
 
 [functions.get-user-emails]
 verify_jwt = true
+[functions.aviator-round]
+verify_jwt = false
