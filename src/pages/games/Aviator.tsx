@@ -120,10 +120,9 @@ const Aviator = () => {
     // Record actual crash on consumed admin entry for verification log
     if (consumedIdRef.current) {
       try {
-        await supabase
-          .from("aviator_admin_controls")
-          .update({ actual_crash: crashPoint })
-          .eq("id", consumedIdRef.current);
+        await supabase.functions.invoke("aviator-round", {
+          body: { action: "record", control_id: consumedIdRef.current, actual_crash: crashPoint },
+        });
       } catch (e) {
         console.error("record actual_crash", e);
       }
