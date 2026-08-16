@@ -128,6 +128,7 @@ export type Database = {
           created_at: string
           id: string
           method: Database["public"]["Enums"]["deposit_method"]
+          screenshot_path: string | null
           sender_account: string | null
           status: Database["public"]["Enums"]["deposit_status"]
           transaction_id: string | null
@@ -139,6 +140,7 @@ export type Database = {
           created_at?: string
           id?: string
           method: Database["public"]["Enums"]["deposit_method"]
+          screenshot_path?: string | null
           sender_account?: string | null
           status?: Database["public"]["Enums"]["deposit_status"]
           transaction_id?: string | null
@@ -150,6 +152,7 @@ export type Database = {
           created_at?: string
           id?: string
           method?: Database["public"]["Enums"]["deposit_method"]
+          screenshot_path?: string | null
           sender_account?: string | null
           status?: Database["public"]["Enums"]["deposit_status"]
           transaction_id?: string | null
