@@ -22,6 +22,12 @@ const isRateLimited = (key: string) => {
   return false;
 };
 
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -29,64 +35,54 @@ serve(async (req) => {
 
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-               req.headers.get("cf-connecting-ip") || "unknown";
+      req.headers.get("cf-connecting-ip") || "unknown";
     if (isRateLimited(`ip:${ip}`)) {
-      return new Response(JSON.stringify({ error: "Too many requests" }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Too many requests" }, 429);
     }
 
-    const { username } = await req.json();
-    if (!username || typeof username !== "string") {
-      return new Response(JSON.stringify({ error: "Username required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const { username, password } = await req.json();
+    const cleaned = typeof username === "string" ? username.trim() : "";
+
+    if (!/^[A-Za-z0-9_.-]{3,40}$/.test(cleaned) || typeof password !== "string" || !password) {
+      return json({ error: "Invalid username or password" }, 400);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const admin = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    const cleaned = username.trim();
-    if (!/^[A-Za-z0-9_.-]{3,40}$/.test(cleaned)) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const { data: profile, error: pErr } = await supabase
+    const { data: profile } = await admin
       .from("profiles")
       .select("user_id")
       .ilike("username", cleaned)
       .maybeSingle();
 
-    if (pErr || !profile) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!profile) {
+      return json({ error: "Invalid username or password" }, 401);
     }
 
-    const { data: userData, error: uErr } = await supabase.auth.admin.getUserById(profile.user_id);
-    if (uErr || !userData?.user?.email) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const { data: userData } = await admin.auth.admin.getUserById(profile.user_id);
+    const email = userData?.user?.email;
+    if (!email) {
+      return json({ error: "Invalid username or password" }, 401);
     }
 
-    return new Response(JSON.stringify({ email: userData.user.email }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Sign in server-side so the account's email is never disclosed to the client
+    const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
+    const { data: signIn, error: signInError } = await anonClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError || !signIn.session) {
+      return json({ error: "Invalid username or password" }, 401);
+    }
+
+    return json({
+      access_token: signIn.session.access_token,
+      refresh_token: signIn.session.refresh_token,
     });
   } catch (e) {
     console.error("resolve-username error:", e);
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: "Server error" }, 500);
   }
 });
