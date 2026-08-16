@@ -326,6 +326,20 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
           />
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="screenshot">Payment Screenshot</Label>
+          <Input
+            id="screenshot"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setScreenshot(e.target.files?.[0] ?? null)}
+          />
+          <p className="text-xs text-muted-foreground">
+            {screenshot ? screenshot.name : "Attach a screenshot of your payment (required)"}
+          </p>
+        </div>
+
+
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => setStep("amount")} className="flex-1">
             Back
