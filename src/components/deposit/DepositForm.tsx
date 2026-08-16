@@ -43,6 +43,7 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
   const [amount, setAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [senderAccount, setSenderAccount] = useState("");
+  const [screenshot, setScreenshot] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentSetting, setPaymentSetting] = useState<PaymentSetting | null>(null);
   const { toast } = useToast();
@@ -121,6 +122,14 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
       });
       return;
     }
+    if (!screenshot) {
+      toast({
+        title: "Screenshot required",
+        description: "Please attach a screenshot of your payment",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep("confirm");
   };
 
@@ -136,12 +145,24 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
 
     setIsSubmitting(true);
     try {
+      let screenshotPath: string | null = null;
+      if (screenshot) {
+        const ext = screenshot.name.split(".").pop() || "jpg";
+        const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("deposit-screenshots")
+          .upload(path, screenshot, { contentType: screenshot.type || "image/jpeg" });
+        if (uploadError) throw uploadError;
+        screenshotPath = path;
+      }
+
       const { error } = await supabase.from("deposits").insert({
         user_id: user.id,
         method: method,
         amount: parseFloat(amount),
         transaction_id: transactionId.trim(),
         sender_account: senderAccount.trim(),
+        screenshot_path: screenshotPath,
       });
 
       if (error) throw error;
@@ -157,6 +178,7 @@ const DepositForm = ({ method, methodData, onSuccess }: DepositFormProps) => {
       setIsSubmitting(false);
     }
   };
+
 
   if (step === "loading") {
     return (
