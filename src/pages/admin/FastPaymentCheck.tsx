@@ -15,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CreditCard, CheckCircle, XCircle, Clock, DollarSign } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CreditCard, CheckCircle, XCircle, Clock, DollarSign, Image as ImageIcon } from "lucide-react";
 import { format, subDays } from "date-fns";
 
 interface Deposit {
@@ -26,9 +27,11 @@ interface Deposit {
   status: string;
   transaction_id: string | null;
   sender_account: string | null;
+  screenshot_path: string | null;
   created_at: string;
   username?: string;
 }
+
 
 const FastPaymentCheck = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,7 +46,23 @@ const FastPaymentCheck = () => {
     rejected: 0,
     totalAmount: 0,
   });
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const viewScreenshot = async (path: string) => {
+    const { data, error } = await supabase.storage
+      .from("deposit-screenshots")
+      .createSignedUrl(path, 300);
+    if (error || !data) {
+      toast({
+        title: "Could not load screenshot",
+        description: error?.message ?? "Unknown error",
+        variant: "destructive",
+      });
+      return;
+    }
+    setScreenshotUrl(data.signedUrl);
+  };
 
   const fetchDeposits = async (userId?: string) => {
     setLoading(true);
@@ -298,7 +317,9 @@ const FastPaymentCheck = () => {
                   <TableHead>Amount</TableHead>
                   <TableHead>Transaction ID</TableHead>
                   <TableHead>Sender Account</TableHead>
+                  <TableHead>Screenshot</TableHead>
                   <TableHead>Status</TableHead>
+
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -319,6 +340,20 @@ const FastPaymentCheck = () => {
                     <TableCell className="font-mono text-sm">
                       {deposit.sender_account || "-"}
                     </TableCell>
+                    <TableCell>
+                      {deposit.screenshot_path ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => viewScreenshot(deposit.screenshot_path!)}
+                        >
+                          <ImageIcon className="w-4 h-4 mr-1" /> View
+                        </Button>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(deposit.status)}
