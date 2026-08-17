@@ -584,28 +584,51 @@ async function createNewRound(supabase: any, durationType: string) {
   const now = new Date();
   const durationMs = getDurationMs(durationType);
   const endTime = new Date(now.getTime() + durationMs);
-  const periodId = generatePeriodId(durationType, now);
+  const basePeriodId = generatePeriodId(durationType, now);
 
-  const { data: newRound, error } = await supabase
-    .from("wingo_rounds")
-    .insert({
-      period_id: periodId,
-      duration_type: durationType,
-      status: "active",
-      start_time: now.toISOString(),
-      end_time: endTime.toISOString(),
-    })
-    .select()
-    .single();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const periodId = attempt === 0 ? basePeriodId : `${basePeriodId}${attempt}`;
 
-  if (error) {
+    const { data: newRound, error } = await supabase
+      .from("wingo_rounds")
+      .insert({
+        period_id: periodId,
+        duration_type: durationType,
+        status: "active",
+        start_time: now.toISOString(),
+        end_time: endTime.toISOString(),
+      })
+      .select()
+      .single();
+
+    if (!error) {
+      console.log(`Created new ${durationType} round: ${periodId}`);
+      return newRound;
+    }
+
+    // Duplicate period_id: another request already created this round
+    if (error.code === "23505") {
+      const { data: existing } = await supabase
+        .from("wingo_rounds")
+        .select("*")
+        .eq("duration_type", durationType)
+        .eq("status", "active")
+        .gt("end_time", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existing) return existing;
+      continue; // try a suffixed period id
+    }
+
     console.error("Error creating round:", error);
     throw error;
   }
 
-  console.log(`Created new ${durationType} round: ${periodId}`);
-  return newRound;
+  throw new Error("Could not create round");
 }
+
 
 // Helper: Complete a round and process bets
 async function completeRound(supabase: any, roundId: string, durationType: string) {
