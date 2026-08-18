@@ -96,6 +96,7 @@ const App = () => (
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
           <Route path="/admin/games/wingo" element={<WingoControl />} />
           <Route path="/admin/games/aviator" element={<AviatorControl />} />
+          <Route path="/admin/promo-banner" element={<PromoBanner />} />
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />
