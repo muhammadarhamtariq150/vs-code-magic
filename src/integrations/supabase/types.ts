@@ -314,6 +314,42 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_banners: {
+        Row: {
+          created_at: string
+          cta_text: string
+          description: string
+          enabled: boolean
+          highlight: string
+          id: string
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_text?: string
+          description?: string
+          enabled?: boolean
+          highlight?: string
+          id?: string
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_text?: string
+          description?: string
+          enabled?: boolean
+          highlight?: string
+          id?: string
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       referral_bonuses: {
         Row: {
           created_at: string
