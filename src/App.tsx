@@ -49,6 +49,7 @@ import WithdrawalManagement from "./pages/admin/WithdrawalManagement";
 import PaymentSettings from "./pages/admin/PaymentSettings";
 import WingoControl from "./pages/admin/WingoControl";
 import AviatorControl from "./pages/admin/AviatorControl";
+import PromoBanner from "./pages/admin/PromoBanner";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +96,7 @@ const App = () => (
           <Route path="/admin/finance/withdrawal" element={<WithdrawalManagement />} />
           <Route path="/admin/games/wingo" element={<WingoControl />} />
           <Route path="/admin/games/aviator" element={<AviatorControl />} />
+          <Route path="/admin/promo-banner" element={<PromoBanner />} />
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />

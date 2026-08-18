@@ -9,6 +9,7 @@ import GamesCarousel from "@/components/games/GamesCarousel";
 import GamesGrid from "@/components/games/GamesGrid";
 import FloatingActions from "@/components/games/FloatingActions";
 import DepositDialog from "@/components/deposit/DepositDialog";
+import BumperOfferDialog from "@/components/promo/BumperOfferDialog";
 import PromoPage from "@/pages/PromoPage";
 import ProfilePage from "@/pages/ProfilePage";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -60,6 +61,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
+      <BumperOfferDialog onCta={() => setDepositOpen(true)} />
       <Header />
       
       {/* Mobile Layout */}
