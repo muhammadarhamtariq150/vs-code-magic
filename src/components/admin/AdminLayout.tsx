@@ -19,6 +19,7 @@ import {
   Wallet,
   LogOut,
   Target,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -61,6 +62,11 @@ const menuItems = [
       { title: "Wingo Control", path: "/admin/games/wingo", icon: Target },
       { title: "Aviator Control", path: "/admin/games/aviator", icon: Target },
     ],
+  },
+  {
+    title: "Promo Banner",
+    icon: Megaphone,
+    path: "/admin/promo-banner",
   },
 ];
 
