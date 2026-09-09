@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWallet } from "@/hooks/useWallet";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useSound } from "@/hooks/useSound";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@/lib/router-compat";
 import { useState } from "react";
 import DepositDialog from "@/components/deposit/DepositDialog";
 import WithdrawalDialog from "@/components/withdrawal/WithdrawalDialog";

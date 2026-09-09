@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, Navigate } from "react-router-dom";
+import { Link, useLocation, Navigate } from "@/lib/router-compat";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";

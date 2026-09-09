@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { ArrowLeft, HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
