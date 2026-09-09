@@ -1,6 +1,6 @@
 import { Flame, Gamepad2, Fish, Ticket, PlaySquare, Trophy, Radio, Dribbble, ClipboardList, Crown, Gift } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
-import { useNavigate } from "@/lib/router-compat";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarItemProps {
   icon: React.ReactNode;

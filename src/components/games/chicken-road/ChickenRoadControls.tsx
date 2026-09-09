@@ -66,7 +66,7 @@ const ChickenRoadControls = ({
                 value={betAmount}
                 onChange={(e) => setBetAmount(e.target.value)}
                 disabled={isPlaying && !gameOver}
-                className="w-20 h-10 text-center bg-[#1e2a36] border border-[#2a3a4c] rounded-lg text-white font-bold text-lg focus:outline-hidden focus:border-emerald-500 disabled:opacity-40"
+                className="w-20 h-10 text-center bg-[#1e2a36] border border-[#2a3a4c] rounded-lg text-white font-bold text-lg focus:outline-none focus:border-emerald-500 disabled:opacity-40"
               />
             </div>
             <button

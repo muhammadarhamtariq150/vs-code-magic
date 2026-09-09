@@ -72,7 +72,7 @@ const PromoPage = () => {
                 type="text"
                 value={referralLink}
                 readOnly
-                className="flex-1 bg-transparent text-sm text-foreground outline-hidden truncate"
+                className="flex-1 bg-transparent text-sm text-foreground outline-none truncate"
               />
             </div>
             <div className="flex gap-3">

@@ -1,4 +1,4 @@
-import { useNavigate } from "@/lib/router-compat";
+import { useNavigate } from "react-router-dom";
 import { useSound } from "@/hooks/useSound";
 
 interface GameCardProps {
