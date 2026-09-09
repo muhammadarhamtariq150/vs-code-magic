@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
