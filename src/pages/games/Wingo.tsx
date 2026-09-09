@@ -461,7 +461,7 @@ const Wingo = () => {
                     const value = parseInt(e.target.value) || 0;
                     setBetAmount(Math.max(1, Math.min(value, balance)));
                   }}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-lg font-bold"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-sky-500 text-lg font-bold"
                   placeholder="Enter amount"
                 />
               </div>

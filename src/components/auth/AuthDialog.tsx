@@ -442,7 +442,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+                className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary/50 transition-colors disabled:opacity-50"
               />
             </div>
 
@@ -532,7 +532,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={loading}
-                    className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+                    className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary/50 transition-colors disabled:opacity-50"
                   />
                 </div>
               )}
@@ -547,7 +547,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   disabled={loading}
                   autoCapitalize="none"
                   autoCorrect="off"
-                  className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+                  className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary/50 transition-colors disabled:opacity-50"
                 />
               </div>
 
@@ -559,7 +559,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
-                  className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+                  className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary/50 transition-colors disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -592,7 +592,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     disabled={loading}
-                    className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors disabled:opacity-50"
+                    className="w-full bg-background/50 border border-border/50 rounded-lg px-4 py-4 pr-12 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary/50 transition-colors disabled:opacity-50"
                   />
                   <button
                     type="button"
@@ -625,7 +625,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                       }
                     }}
                     disabled={loading}
-                    className={`w-full bg-background/50 border rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none transition-colors disabled:opacity-50 font-mono uppercase ${
+                    className={`w-full bg-background/50 border rounded-lg px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-hidden transition-colors disabled:opacity-50 font-mono uppercase ${
                       promoCodeValid === true 
                         ? "border-green-500 bg-green-500/10" 
                         : promoCodeValid === false 

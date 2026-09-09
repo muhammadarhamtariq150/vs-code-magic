@@ -73,7 +73,7 @@ const AviatorBetPanel = memo(({
               min={1.1}
               step={0.1}
               disabled={betPlaced}
-              className="flex-1 bg-transparent text-white text-center font-bold text-lg outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="flex-1 bg-transparent text-white text-center font-bold text-lg outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <span className="text-white/40 text-xs font-bold">x</span>
           </div>
