@@ -21,7 +21,7 @@ const CategoryTabs = ({ activeTab, onTabChange }: CategoryTabsProps) => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 overflow-x-auto pb-1">
       {tabs.map((tab) => (
         <button
           key={tab.id}

@@ -7,13 +7,13 @@ interface SearchBarProps {
 
 const SearchBar = ({ value, onChange }: SearchBarProps) => {
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
         type="text"
         placeholder="Search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="search-input w-64 pr-10"
+        className="search-input h-10 w-full pr-10"
       />
       <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
     </div>

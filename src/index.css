@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-
 @layer base {
   :root {
     --background: 180 40% 6%;
@@ -71,13 +69,39 @@
 }
 
 @layer base {
+  .lobby-theme {
+    --background: 0 0% 100%;
+    --foreground: 136 40% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 136 40% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 136 40% 13%;
+    --primary: 125 72% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 24% 94%;
+    --secondary-foreground: 125 72% 24%;
+    --muted: 120 18% 96%;
+    --muted-foreground: 130 8% 43%;
+    --accent: 48 91% 53%;
+    --accent-foreground: 125 72% 22%;
+    --border: 120 16% 86%;
+    --input: 120 16% 86%;
+    --ring: 125 72% 30%;
+    --game-card-bg: 0 0% 100%;
+    --hot-badge: 4 78% 56%;
+    --shadow-nav: 0 -6px 20px hsl(125 25% 20% / 0.09);
+    color-scheme: light;
+  }
+}
+
+@layer base {
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Figtree', sans-serif;
     background: var(--gradient-dark);
   }
 }
@@ -119,12 +143,12 @@
   }
 
   .game-card:hover {
-    @apply scale-105;
-    box-shadow: 0 8px 30px hsl(0 0% 0% / 0.5);
+    @apply -translate-y-0.5;
+    box-shadow: 0 6px 16px hsl(125 25% 20% / 0.16);
   }
 
   .hot-badge {
-    @apply absolute top-2 left-2 px-2 py-0.5 text-xs font-bold text-white rounded;
+    @apply absolute top-2 left-2 px-2 py-0.5 text-xs font-bold text-primary-foreground rounded;
     background: var(--gradient-hot);
   }
 
@@ -156,7 +180,7 @@
   }
 
   .floating-action {
-    @apply w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shadow-lg;
+    @apply w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shadow-md;
   }
 
   .floating-action:hover {
@@ -174,6 +198,34 @@
 
   .glow-primary {
     box-shadow: var(--shadow-glow);
+  }
+
+  .font-display {
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .game-card-scrim {
+    background: linear-gradient(to top, hsl(125 40% 10% / 0.82), transparent 58%);
+  }
+
+  .lobby-theme .category-tab {
+    @apply shrink-0 rounded-lg border border-border px-3 py-2 text-xs;
+  }
+
+  .lobby-theme .category-tab.active {
+    @apply border-primary bg-primary text-primary-foreground shadow-sm;
+  }
+
+  .lobby-theme .category-tab:not(.active) {
+    @apply bg-card text-muted-foreground hover:border-primary/40 hover:bg-secondary;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lobby-theme *, .lobby-theme *::before, .lobby-theme *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 
   @keyframes marquee {

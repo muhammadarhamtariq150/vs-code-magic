@@ -31,9 +31,9 @@ const FloatingActions = () => {
 
   return (
     <>
-      <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40">
+      <div className="fixed right-3 bottom-24 flex flex-col gap-2 z-40">
         <button
-          className="floating-action bg-green-500 hover:bg-green-600 text-white"
+          className="floating-action bg-primary hover:bg-primary/90 text-primary-foreground"
           style={{ animationDelay: "0s" }}
           onClick={handleSupportClick}
           aria-label="Customer Support"
@@ -42,7 +42,7 @@ const FloatingActions = () => {
           <Phone className="w-5 h-5" />
         </button>
         <button
-          className="floating-action bg-blue-500 hover:bg-blue-600 text-white"
+          className="floating-action bg-secondary hover:bg-secondary/80 text-secondary-foreground"
           style={{ animationDelay: "0.1s" }}
           onClick={handleSupportClick}
           aria-label="Message"
@@ -51,7 +51,7 @@ const FloatingActions = () => {
           <MessageCircle className="w-5 h-5" />
         </button>
         <button
-          className="floating-action bg-sky-400 hover:bg-sky-500 text-white"
+          className="floating-action bg-accent hover:bg-accent/90 text-accent-foreground"
           style={{ animationDelay: "0.2s" }}
           onClick={handleSupportClick}
           aria-label="Telegram"
@@ -60,7 +60,7 @@ const FloatingActions = () => {
           <Send className="w-5 h-5" />
         </button>
         <button
-          className="floating-action bg-red-500 hover:bg-red-600 text-white"
+          className="floating-action bg-destructive hover:bg-destructive/90 text-destructive-foreground"
           style={{ animationDelay: "0.3s" }}
           onClick={handleSupportClick}
           aria-label="Support"
