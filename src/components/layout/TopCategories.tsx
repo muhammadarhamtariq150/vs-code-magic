@@ -27,9 +27,9 @@ const TopCategories = ({ activeCategory, onCategoryChange }: TopCategoriesProps)
   };
 
   return (
-    <div className="w-full bg-card/50 border-b border-border/30 md:hidden">
+    <div className="w-full bg-card border-b border-border md:hidden">
       <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex gap-2 p-3">
+        <div className="flex gap-2 px-3 py-3">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeCategory === cat.id;
@@ -39,10 +39,10 @@ const TopCategories = ({ activeCategory, onCategoryChange }: TopCategoriesProps)
                 key={cat.id}
                 onClick={() => handleClick(cat.id)}
                 onMouseEnter={() => playHover()}
-                className={`flex flex-col items-center justify-center min-w-[70px] py-2 px-3 rounded-xl transition-all ${
+                className={`flex flex-col items-center justify-center min-w-[64px] py-2 px-2 rounded-lg border transition-all active:scale-95 ${
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-                    : "bg-secondary/50 text-foreground hover:bg-secondary"
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-card text-muted-foreground border-border hover:text-primary hover:border-primary/40"
                 }`}
               >
                 <Icon className="w-5 h-5 mb-1" />

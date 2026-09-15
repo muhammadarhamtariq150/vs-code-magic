@@ -28,11 +28,11 @@ const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
 
   return (
     <div 
-      className="game-card group cursor-pointer relative overflow-hidden rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" 
+      className="game-card group cursor-pointer relative overflow-hidden rounded-lg border border-border shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98]" 
       onClick={handlePlay}
       onMouseEnter={handleMouseEnter}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/5] overflow-hidden">
         <img 
           src={image} 
           alt={`Play ${name} casino game on games7play`}
@@ -45,11 +45,11 @@ const GameCard = ({ name, image, url, isHot, isInternal }: GameCardProps) => {
         )}
         
         {/* Gradient overlay for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="absolute inset-0 game-card-scrim" />
         
         {/* Game name overlay on mobile */}
         <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-2 sm:hidden">
-          <h3 className="text-[10px] font-semibold text-white truncate drop-shadow-md">{name}</h3>
+          <h3 className="text-[10px] font-bold text-primary-foreground truncate">{name}</h3>
         </div>
         
         {/* Hover overlay for desktop */}

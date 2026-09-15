@@ -13,6 +13,8 @@ import BumperOfferDialog from "@/components/promo/BumperOfferDialog";
 import PromoPage from "@/pages/PromoPage";
 import ProfilePage from "@/pages/ProfilePage";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Gift, Megaphone, Sparkles, Trophy, UserPlus, Crown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState("lobby");
@@ -39,9 +41,42 @@ const Index = () => {
         return <ProfilePage />;
       default:
         return (
-          <main className="flex-1 p-4 pb-20">
+          <main className="flex-1 pb-24">
             <h1 className="sr-only">games7play — Online Casino and Betting Games</h1>
-            <div className="flex flex-col gap-4 mb-4">
+            <section className="px-3 pt-3" aria-label="Welcome offer">
+              <div className="relative overflow-hidden rounded-lg bg-primary px-5 py-5 text-primary-foreground shadow-md">
+                <Sparkles className="absolute right-4 top-4 h-5 w-5 text-accent" aria-hidden="true" />
+                <p className="text-[11px] font-extrabold uppercase text-accent">Today only</p>
+                <h2 className="mt-1 max-w-[250px] font-display text-2xl font-extrabold leading-tight">Deposit today and get a 50% bonus</h2>
+                <Button size="sm" className="mt-4 h-8 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => setDepositOpen(true)}>
+                  Claim bonus
+                </Button>
+                <Gift className="absolute -bottom-3 right-4 h-20 w-20 text-primary-foreground/15" aria-hidden="true" />
+              </div>
+            </section>
+
+            <div className="mx-3 mt-3 flex items-center gap-2 border-y border-border py-2 text-xs font-semibold text-muted-foreground">
+              <Megaphone className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <p className="truncate">Play smart, win big — your next favorite game is ready.</p>
+            </div>
+
+            <section className="grid grid-cols-4 gap-2 px-3 py-3" aria-label="Rewards">
+              {[
+                { label: "Rewards", icon: Gift },
+                { label: "Mission", icon: Trophy },
+                { label: "Invite", icon: UserPlus },
+                { label: "VIP", icon: Crown },
+              ].map(({ label, icon: Icon }) => (
+                <div key={label} className="flex flex-col items-center gap-1 text-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-primary">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <span className="text-[11px] font-bold text-foreground">{label}</span>
+                </div>
+              ))}
+            </section>
+
+            <div className="flex flex-col gap-3 border-t border-border px-3 py-3">
               <SearchBar 
                 value={searchQuery} 
                 onChange={setSearchQuery} 
@@ -52,14 +87,16 @@ const Index = () => {
               />
             </div>
             
-            <GamesGrid searchQuery={searchQuery} activeCategory={activeCategory} />
+            <div className="px-3">
+              <GamesGrid searchQuery={searchQuery} activeCategory={activeCategory} />
+            </div>
           </main>
         );
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="lobby-theme min-h-screen bg-background font-sans text-foreground">
       <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
       <BumperOfferDialog onCta={() => setDepositOpen(true)} />
       <Header />
