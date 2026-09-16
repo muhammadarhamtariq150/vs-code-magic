@@ -101,7 +101,7 @@ const AviatorGraph = memo(({ multiplier, isFlying, crashed, hasCashedOut }: Avia
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Draw professional airplane at curve tip
+    // Draw the distinctive red, outlined Aviator jet from the reference.
     if (!crashed) {
       const prevProgress = Math.max(0, progress - 0.02);
       const prevX = 40 + (W - 80) * prevProgress;
@@ -112,122 +112,83 @@ const AviatorGraph = memo(({ multiplier, isFlying, crashed, hasCashedOut }: Avia
       ctx.translate(endX, endY);
       ctx.rotate(-angle);
 
-      const s = Math.min(W, H) * 0.07; // plane scale
+      const s = Math.min(W, H) * 0.1;
+      const red = "#ff1717";
+      const dark = "#0a0a12";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
 
-      // Engine glow
-      ctx.shadowColor = "#ff4444";
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = "rgba(255, 80, 30, 0.6)";
-      ctx.beginPath();
-      ctx.ellipse(-s * 1.2, 0, s * 0.6, s * 0.25, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
+      // Three sharp speed streaks behind the aircraft.
+      ctx.strokeStyle = red;
+      ctx.lineWidth = Math.max(2, s * 0.09);
+      [[-2.25, -0.32, -1.22, -0.3], [-2.5, 0, -1.35, -0.03], [-2.18, 0.31, -1.05, 0.17]].forEach(([x1, y1, x2, y2]) => {
+        ctx.beginPath();
+        ctx.moveTo(s * x1, s * y1);
+        ctx.lineTo(s * x2, s * y2);
+        ctx.stroke();
+      });
 
-      // Trail flames
-      ctx.fillStyle = "rgba(255, 120, 30, 0.4)";
+      // Solid side-profile silhouette: swept wings, raised tail and pointed nose.
+      ctx.fillStyle = red;
+      ctx.strokeStyle = red;
+      ctx.lineWidth = Math.max(1.5, s * 0.06);
       ctx.beginPath();
-      ctx.moveTo(-s * 0.6, 0);
-      ctx.lineTo(-s * 2.2, s * 0.15);
-      ctx.lineTo(-s * 1.8, 0);
-      ctx.lineTo(-s * 2.2, -s * 0.15);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = "rgba(255, 200, 50, 0.3)";
-      ctx.beginPath();
-      ctx.moveTo(-s * 0.6, 0);
-      ctx.lineTo(-s * 2.8, s * 0.08);
-      ctx.lineTo(-s * 2.4, 0);
-      ctx.lineTo(-s * 2.8, -s * 0.08);
-      ctx.closePath();
-      ctx.fill();
-
-      // Fuselage (main body)
-      ctx.fillStyle = "#dc2626";
-      ctx.strokeStyle = "#7f1d1d";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(s * 1.1, 0);
-      ctx.quadraticCurveTo(s * 0.9, -s * 0.18, s * 0.3, -s * 0.15);
-      ctx.lineTo(-s * 0.7, -s * 0.12);
-      ctx.quadraticCurveTo(-s * 0.9, 0, -s * 0.7, s * 0.12);
-      ctx.lineTo(s * 0.3, s * 0.15);
-      ctx.quadraticCurveTo(s * 0.9, s * 0.18, s * 1.1, 0);
+      ctx.moveTo(-1.45 * s, -0.16 * s);
+      ctx.lineTo(-1.82 * s, -0.62 * s);
+      ctx.lineTo(-1.62 * s, -0.7 * s);
+      ctx.lineTo(-1.05 * s, -0.34 * s);
+      ctx.lineTo(-0.2 * s, -0.49 * s);
+      ctx.lineTo(0.18 * s, -0.39 * s);
+      ctx.lineTo(0.62 * s, -0.3 * s);
+      ctx.lineTo(1.34 * s, -0.08 * s);
+      ctx.quadraticCurveTo(1.62 * s, 0, 1.34 * s, 0.13 * s);
+      ctx.lineTo(0.45 * s, 0.34 * s);
+      ctx.lineTo(-0.55 * s, 0.5 * s);
+      ctx.lineTo(-1.42 * s, 0.63 * s);
+      ctx.lineTo(-1.72 * s, 0.5 * s);
+      ctx.lineTo(-1.33 * s, 0.22 * s);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
 
-      // Fuselage highlight
-      ctx.fillStyle = "rgba(255, 100, 100, 0.4)";
+      // Tall swept wing, matching the reference plane's recognizable profile.
       ctx.beginPath();
-      ctx.moveTo(s * 0.9, -s * 0.05);
-      ctx.quadraticCurveTo(s * 0.5, -s * 0.14, -s * 0.3, -s * 0.1);
-      ctx.lineTo(-s * 0.3, -s * 0.02);
-      ctx.quadraticCurveTo(s * 0.4, -s * 0.02, s * 0.9, -s * 0.05);
-      ctx.fill();
-
-      // Main wings
-      ctx.fillStyle = "#b91c1c";
-      ctx.strokeStyle = "#7f1d1d";
-      ctx.lineWidth = 0.8;
-      ctx.beginPath();
-      ctx.moveTo(s * 0.15, -s * 0.12);
-      ctx.lineTo(-s * 0.1, -s * 0.65);
-      ctx.lineTo(-s * 0.4, -s * 0.6);
-      ctx.lineTo(-s * 0.25, -s * 0.12);
+      ctx.moveTo(0.48 * s, -0.28 * s);
+      ctx.lineTo(0.75 * s, -1.18 * s);
+      ctx.lineTo(0.92 * s, -1.12 * s);
+      ctx.lineTo(0.94 * s, -0.14 * s);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
 
+      // Lower wing and nose fin.
       ctx.beginPath();
-      ctx.moveTo(s * 0.15, s * 0.12);
-      ctx.lineTo(-s * 0.1, s * 0.65);
-      ctx.lineTo(-s * 0.4, s * 0.6);
-      ctx.lineTo(-s * 0.25, s * 0.12);
+      ctx.moveTo(0.2 * s, 0.28 * s);
+      ctx.lineTo(0.66 * s, 0.88 * s);
+      ctx.lineTo(0.83 * s, 0.82 * s);
+      ctx.lineTo(0.72 * s, 0.17 * s);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
 
-      // Tail fin
-      ctx.fillStyle = "#dc2626";
+      // Black cockpit and cutout marks give the same illustrated logo treatment.
+      ctx.fillStyle = dark;
       ctx.beginPath();
-      ctx.moveTo(-s * 0.55, -s * 0.1);
-      ctx.lineTo(-s * 0.75, -s * 0.45);
-      ctx.lineTo(-s * 0.9, -s * 0.4);
-      ctx.lineTo(-s * 0.75, -s * 0.1);
+      ctx.moveTo(0.1 * s, -0.29 * s);
+      ctx.lineTo(0.58 * s, -0.19 * s);
+      ctx.lineTo(0.43 * s, -0.02 * s);
+      ctx.lineTo(0.03 * s, -0.13 * s);
       ctx.closePath();
       ctx.fill();
-      ctx.stroke();
-
-      // Tail horizontal stabilizers
-      ctx.fillStyle = "#b91c1c";
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = Math.max(1.5, s * 0.065);
       ctx.beginPath();
-      ctx.moveTo(-s * 0.6, -s * 0.08);
-      ctx.lineTo(-s * 0.7, -s * 0.3);
-      ctx.lineTo(-s * 0.85, -s * 0.25);
-      ctx.lineTo(-s * 0.7, -s * 0.08);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(-s * 0.6, s * 0.08);
-      ctx.lineTo(-s * 0.7, s * 0.3);
-      ctx.lineTo(-s * 0.85, s * 0.25);
-      ctx.lineTo(-s * 0.7, s * 0.08);
-      ctx.closePath();
-      ctx.fill();
-
-      // Cockpit window
-      ctx.fillStyle = "rgba(150, 220, 255, 0.7)";
-      ctx.beginPath();
-      ctx.ellipse(s * 0.7, -s * 0.03, s * 0.12, s * 0.06, -0.1, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Propeller disc (spinning effect)
-      ctx.strokeStyle = "rgba(200, 200, 200, 0.3)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.ellipse(s * 1.1, 0, s * 0.03, s * 0.2, 0, 0, Math.PI * 2);
+      ctx.moveTo(-0.72 * s, -0.2 * s);
+      ctx.lineTo(-0.32 * s, -0.31 * s);
+      ctx.moveTo(-0.98 * s, 0.16 * s);
+      ctx.lineTo(-0.48 * s, 0.08 * s);
+      ctx.moveTo(0.42 * s, -0.02 * s);
+      ctx.lineTo(0.55 * s, 0.21 * s);
       ctx.stroke();
 
       ctx.restore();
