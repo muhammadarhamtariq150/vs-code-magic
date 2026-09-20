@@ -50,6 +50,7 @@ import PaymentSettings from "./pages/admin/PaymentSettings";
 import WingoControl from "./pages/admin/WingoControl";
 import AviatorControl from "./pages/admin/AviatorControl";
 import PromoBanner from "./pages/admin/PromoBanner";
+import PlayerAnalysis from "./pages/admin/PlayerAnalysis";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/admin/games/wingo" element={<WingoControl />} />
           <Route path="/admin/games/aviator" element={<AviatorControl />} />
           <Route path="/admin/promo-banner" element={<PromoBanner />} />
+          <Route path="/admin/player-analysis" element={<PlayerAnalysis />} />
           
           {/* User Profile Routes */}
           <Route path="/profile" element={<ProfilePage />} />

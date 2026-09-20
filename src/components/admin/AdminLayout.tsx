@@ -20,6 +20,7 @@ import {
   LogOut,
   Target,
   Megaphone,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -67,6 +68,11 @@ const menuItems = [
     title: "Promo Banner",
     icon: Megaphone,
     path: "/admin/promo-banner",
+  },
+  {
+    title: "AI Player Analysis",
+    icon: Sparkles,
+    path: "/admin/player-analysis",
   },
 ];
 
