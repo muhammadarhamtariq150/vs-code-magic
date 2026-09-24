@@ -1,101 +1,42 @@
-import { useState } from "react";
-import { Phone, MessageCircle, Send, Headphones, Mail } from "lucide-react";
+import { Phone, MessageCircle, Send, Headphones } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
-const SUPPORT_EMAIL = "7XBETOFFICAIL@proton.me";
+// Pakistan number 03158517738 -> international format 923158517738
+const WHATSAPP_NUMBER = "923158517738";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+  "Hi, I need help with games7play."
+)}`;
 
 const FloatingActions = () => {
   const { playClick } = useSound();
-  const [open, setOpen] = useState(false);
 
   const handleSupportClick = () => {
     playClick();
-    setOpen(true);
+    window.open(WHATSAPP_URL, "_blank", "noopener,noreferrer");
   };
 
-  const copyEmail = async () => {
-    playClick();
-    try {
-      await navigator.clipboard.writeText(SUPPORT_EMAIL);
-    } catch {}
-  };
+  const buttons = [
+    { Icon: Phone, label: "Customer Support", className: "bg-primary hover:bg-primary/90 text-primary-foreground", delay: "0s" },
+    { Icon: MessageCircle, label: "Message", className: "bg-secondary hover:bg-secondary/80 text-secondary-foreground", delay: "0.1s" },
+    { Icon: Send, label: "Telegram", className: "bg-accent hover:bg-accent/90 text-accent-foreground", delay: "0.2s" },
+    { Icon: Headphones, label: "Support", className: "bg-destructive hover:bg-destructive/90 text-destructive-foreground", delay: "0.3s" },
+  ];
 
   return (
-    <>
-      <div className="fixed right-3 bottom-24 flex flex-col gap-2 z-40">
+    <div className="fixed right-3 bottom-24 flex flex-col gap-2 z-40">
+      {buttons.map(({ Icon, label, className, delay }) => (
         <button
-          className="floating-action bg-primary hover:bg-primary/90 text-primary-foreground"
-          style={{ animationDelay: "0s" }}
+          key={label}
+          className={`floating-action ${className}`}
+          style={{ animationDelay: delay }}
           onClick={handleSupportClick}
-          aria-label="Customer Support"
-          title="Customer Support"
+          aria-label={label}
+          title={label}
         >
-          <Phone className="w-5 h-5" />
+          <Icon className="w-5 h-5" />
         </button>
-        <button
-          className="floating-action bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-          style={{ animationDelay: "0.1s" }}
-          onClick={handleSupportClick}
-          aria-label="Message"
-          title="Message"
-        >
-          <MessageCircle className="w-5 h-5" />
-        </button>
-        <button
-          className="floating-action bg-accent hover:bg-accent/90 text-accent-foreground"
-          style={{ animationDelay: "0.2s" }}
-          onClick={handleSupportClick}
-          aria-label="Telegram"
-          title="Telegram"
-        >
-          <Send className="w-5 h-5" />
-        </button>
-        <button
-          className="floating-action bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-          style={{ animationDelay: "0.3s" }}
-          onClick={handleSupportClick}
-          aria-label="Support"
-          title="Support"
-        >
-          <Headphones className="w-5 h-5" />
-        </button>
-      </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md text-center">
-          <DialogHeader>
-            <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-              <Mail className="w-7 h-7 text-primary" />
-            </div>
-            <DialogTitle className="text-center">Contact Customer Support</DialogTitle>
-            <DialogDescription className="text-center">
-              Please reach out to us via email at:
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-2">
-            <a
-              href={`mailto:${SUPPORT_EMAIL}`}
-              className="inline-block text-lg font-semibold text-primary break-all"
-            >
-              {SUPPORT_EMAIL}
-            </a>
-          </div>
-          <DialogFooter className="sm:justify-center gap-2">
-            <Button variant="outline" onClick={copyEmail}>Copy Email</Button>
-            <Button onClick={() => { playClick(); setOpen(false); }}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+      ))}
+    </div>
   );
 };
 
