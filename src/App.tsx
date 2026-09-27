@@ -51,6 +51,7 @@ import WingoControl from "./pages/admin/WingoControl";
 import AviatorControl from "./pages/admin/AviatorControl";
 import PromoBanner from "./pages/admin/PromoBanner";
 import PlayerAnalysis from "./pages/admin/PlayerAnalysis";
+import RejectedWithdrawalNotice from "./components/withdrawal/RejectedWithdrawalNotice";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <RejectedWithdrawalNotice />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/controller" element={<ControllerApp />} />
