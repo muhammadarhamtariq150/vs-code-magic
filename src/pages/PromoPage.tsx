@@ -36,8 +36,8 @@ const PromoPage = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join games7play",
-          text: "Join games7play and get bonus on your first deposit!",
+          title: "Join ROYAL XP",
+          text: "Join ROYAL XP and get bonus on your first deposit!",
           url: referralLink,
         });
       } catch {
