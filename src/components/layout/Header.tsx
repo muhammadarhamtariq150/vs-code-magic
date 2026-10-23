@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logoAsset from "@/assets/royal-xp-logo.webp.asset.json";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, User, Plus, Shield, ArrowDownToLine, Users, Link2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,10 +55,8 @@ const Header = () => {
       <header className="h-14 sm:h-16 bg-card border-b border-border flex items-center justify-between px-3 sm:px-4 sticky top-0 z-50 shadow-sm">
         {/* Logo Section */}
         <Link to="/" className="flex items-center gap-2" onClick={() => playClick()}>
-          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-primary flex items-center justify-center shadow-sm ring-2 ring-accent">
-            <span className="text-lg sm:text-xl" aria-hidden="true">7</span>
-          </div>
-          <span className="font-display text-xl sm:text-2xl font-extrabold text-primary">games<span className="text-accent-foreground">7</span>play</span>
+          <img src={logoAsset.url} alt="ROYAL XP logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+          <span className="font-display text-xl sm:text-2xl font-extrabold text-primary">ROYAL <span className="text-accent-foreground">XP</span></span>
         </Link>
         
         {user ? (
