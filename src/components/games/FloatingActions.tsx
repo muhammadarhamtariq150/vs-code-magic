@@ -4,7 +4,7 @@ import { useSound } from "@/hooks/useSound";
 // Pakistan number 03158517738 -> international format 923158517738
 const WHATSAPP_NUMBER = "923158517738";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hi, I need help with games7play."
+  "Hi, I need help with ROYAL XP."
 )}`;
 
 const FloatingActions = () => {

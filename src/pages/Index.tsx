@@ -42,7 +42,7 @@ const Index = () => {
       default:
         return (
           <main className="flex-1 pb-24">
-            <h1 className="sr-only">games7play — Online Casino and Betting Games</h1>
+            <h1 className="sr-only">ROYAL XP — Online Casino and Betting Games</h1>
             <section className="px-3 pt-3" aria-label="Welcome offer">
               <div className="relative overflow-hidden rounded-lg bg-primary px-5 py-5 text-primary-foreground shadow-md">
                 <Sparkles className="absolute right-4 top-4 h-5 w-5 text-accent" aria-hidden="true" />
@@ -128,7 +128,7 @@ const Index = () => {
           />
           
           <main className="flex-1 p-6">
-            <h1 className="sr-only">games7play — Online Casino and Betting Games</h1>
+            <h1 className="sr-only">ROYAL XP — Online Casino and Betting Games</h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <CategoryTabs 
                 activeTab={activeTab} 
